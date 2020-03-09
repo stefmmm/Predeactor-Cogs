@@ -2,7 +2,7 @@
 name: Bug report
 about: Anything bad happened ? Choose this option.
 title: ''
-labels: suggestion(s)
+labels: bug
 assignees: ''
 
 ---
