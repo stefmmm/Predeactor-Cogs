@@ -17,4 +17,5 @@ If you're having any important(s) issue(s), open an issue or pull request to thi
 ## Soon
 
 I'm actually working on a birthday cog. I don't think I need to give explanations about that.
+But firstly, I'm also working of an E-Mail cog. It will connect to your account using your E-Mail and password.
 I'm also thinking of a reputation system. Nothing else for now.
