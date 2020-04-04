@@ -18,10 +18,10 @@ If you encounter a problem during the installation of a cog and/or during its us
 
 If you still can't solve your problem, open an issue.
 
-### Suggestions
+### Feature Request
 
-Thank you for helping us to improve the repository, thanks to your suggestions, our workings will be more in tune with the community and allow the improvement of them.
-- Open an issue and select `Suggestion(s)`.
+Thank you for helping us to improve the repository, and thanks for your suggestions, our workings will be more in tune with the community and allow the improvement of them.
+- Open an issue and select `Feature Request`.
 - Make your magic.
 
 ### Pull requests
