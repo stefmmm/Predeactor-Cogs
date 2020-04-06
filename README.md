@@ -2,6 +2,11 @@
 
 This is a repo made for [Red](https://github.com/Cog-Creators/Red-DiscordBot).
 
+# NEWS! (6/4/2020)
+I don't really work on cogs these days for different reasons, but also because I'm working on my (first) website!
+*Nothing really important at the moment, but I'm not really into Python these days, that's why repo is a bit... lonely.*
+But when I'll have the time and the desire to write in Python, I'll take another look at repo. ^^
+
 ## Available cogs list
 
 | Cog Name     | Description                      |
