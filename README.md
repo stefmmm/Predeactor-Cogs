@@ -2,10 +2,12 @@
 
 This is a repo made for [Red](https://github.com/Cog-Creators/Red-DiscordBot).
 
-# NEWS! (6/4/2020)
-I don't really work on cogs these days for different reasons, but also because I'm working on my (first) website!
-*Nothing really important at the moment, but I'm not really into Python these days, that's why repo is a bit... lonely.*
-But when I'll have the time and the desire to write in Python, I'll take another look at repo. ^^
+# Again news! (13/5/2020)
+Oh hey you, I hope you're doing well! You may wonder why I still didn't made the birthday and mail cog? Well, I just lose the motivation about them (*I didn't even start to write them*), but still, now I got 2 real project :
+- A game where you should help someone, an interactive game made by me*TM*.
+- A cog to explain you what is Python and how to make you own cog, without looking at the Red's Documentation (But I will use it).
+
+That's all, stay home!
 
 ## Available cogs list
 
@@ -21,6 +23,5 @@ If you're having any important(s) issue(s), open an issue or pull request to thi
 
 ## Soon
 
-I'm actually working on a birthday cog. I don't think I need to give explanations about that.
-But firstly, I'm also working of an E-Mail cog. It will connect to your account using your E-Mail and password.
-I'm also thinking of a reputation system. Nothing else for now.
+Working on an adventure cog, where you should help someone.
+Also a cog to help you learn Python and making Red cogs, isn't that your dream?
