@@ -1,5 +1,9 @@
 # Predeactor-Cogs
 
+<p align="center">
+  <img src="https://repository-images.githubusercontent.com/245725383/2fbcee00-906c-11ea-8da9-ecbb66c5b7d4">
+</p>
+
 This is a repo made for [Red](https://github.com/Cog-Creators/Red-DiscordBot).
 
 # Again news! (13/5/2020)
