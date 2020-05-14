@@ -15,9 +15,11 @@ That's all, stay home!
 
 ## Available cogs list
 
-| Cog Name     | Description                      |
-| ------------ | -------------------------------- |
-| Coronavirus  | Get stats about the Coronavirus. |
+| Cog Name     | Description                                          | Version    |
+| ------------ | ---------------------------------------------------- | ---------- |
+| Coronavirus  | Get stats about the Coronavirus.                     | Finished   |
+| ------------ | ---------------------------------------------------- | ---------- |
+| Learning.    | Receive some tutorials about Python and cog creation | Beta (v01) |
 
 ## Support
 
