@@ -1,0 +1,23 @@
+def ref():
+    ref = [
+        "Those links are from the Red - Discord Bot server, thank to them for giving links!",
+        3,
+        "```New to programming:```\n[CodeCademy](https://codecademy.com/) (Free interactive courses for fundamentals)\n[A Byte of Python](https://python.swaroopch.com/) (For complete beginners to programming, also my recommendation)\nSee also: [CodeAbbey](http://www.codeabbey.com/) (Exercises for beginners)\n[learnpython.org](https://www.learnpython.org/) (somewhat interactive tutorial)\n\n```For who already know programming:```\n[Learn X in Y minutes, Where X=Python](https://learnxinyminutes.com/docs/python3/) (For who know programming already)\n[Official Python Documentation, The Python Tutorial](https://docs.python.org/3/tutorial/) (For the in-between group, i.e. knows some programming but not a lot)\n\n```Youtube Videos```\n[Python Programming Begginer Tutorials, by Corey Schafer](https://www.youtube.com/playlist?list=PL-osiE80TeTskrapNbzXhwoFUiLCjGgY7)\n[Python Tutorials, by Corey Schafer](https://www.youtube.com/playlist?list=PL-osiE80TeTt2d9bfVyTiXJA-UTHn6WwU)\n[Python OOP Tutorials - Working with Classes, by Corey Schafer](https://www.youtube.com/playlist?list=PL-osiE80TeTsqhIuOqKhwlXsIBIdSeYtc)"
+    ]
+    return ref
+
+def lvl1():
+    lvl1_list = [
+        "Hello there, and let me say, WELCOME, welcome to your first lesson of *How to use Python3*, wonderful! You're learning right in Discord, isn't it awesome?\n\nI'm Predeactor, I'll be your teacher for now\nSo, what you need is Python, obviously\nYou are running this code from Red, an open source Discord Bot written in Python, so I think you already had Python installed on your system. However, if you need to install Python, you can go to the official Python website to download Python : https://www.python.org/downloads/.\n\nNot on Windows? Using Linux? You can use the command `sudo apt-get install python3`.",
+        20,
+        "```My First Command```\nNow that you installed Python, let's start with your first command!\nWe're gonna start Python, the easiest way is, opening your terminal and typing `python`\n\n```I'm sorry but I don't know what is a terminal...```\nNo worry, everyone start somewhere! You can take a look to this : https://askubuntu.com/a/38220.\nReady? You should see something like this : \n```python\nPython 3.X.X (bla bla bla bla)\nType \"help\", \"copyright\", \"credits\" or \"license\" for more information.\n>>>```\nWelcome to your Python Interpreter, where you can test codes, where `>>>` will be your command.\nNow that we started Python, we're gonna show something in this empty terminal. Type `print(\"My super text\")`, done? Hit Enter and WOAH! You just showed your super text into your terminal using a function, but what is a function? I will tell you later ;)\n\nYou made it! You succesfully launched Python and runned your first command, in the next lesson, we will talk about variable, those magic things!\n\n*Nb: To close your Python interpreter, just close the window or type `exit()` ;)*"
+    ]
+    return lvl1_list
+
+def lvl2():
+    lvl2_list = [
+        "```My First Variable```\nWelcome to your next lesson, let's discover together what a variable is\n\nA variable is an attibution of a data. Let me explain you with an example:\n\t- When you're playing Minecraft and need to find easily your stuff in your chest, you will put a sign on the chest with whatyour chest contain, like `Foods`, and inside the chest, you got all of your delicious food, cooked porks, rabbits, and more...\n\t- When you're cleaning your chamber and have to store everything, you want to separate your books of history the from your books of physics, then you use 2 box, a `History` box, where there's all of your history books, and another one box called `Science` where there's every science books. (Explaining made easy :'))\n\nI hope I didn't lose you.",
+        30,
+        "Now, you want to make your first variable, but how ? We use the `=` sign to define the variable. Start your Python interpreter. We're gonna start by defining what the sound of the dog, the dog's sound is \"Waf!\", maybe not, but that's just an example...\n\nNow type `dog_sound = \"Waf\"`, here, we define the variable dog_sound to \"Waf\", you're maybe wondering why we're using double quotes, that's because we define a *string*, if we don't, we're defining a variable inside a variable, it can be useful sometime, but defining a variable of a variable is useless. We will see the different type of data in the next lesson."
+    ]
+    return lvl2_list
