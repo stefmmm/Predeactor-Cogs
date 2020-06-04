@@ -21,7 +21,6 @@ Sorry for those who was expecting a lot from this cog
 | Cog Name     | Description                                          | Version    |
 | ------------ | ---------------------------------------------------- | ---------- |
 | Coronavirus  | Get stats about the Coronavirus.                     | Finished   |
-| Learning     | Receive some tutorials about Python.                 | EoL        |
 
 ## Hidden cogs
 
