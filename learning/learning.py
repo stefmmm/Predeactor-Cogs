@@ -43,7 +43,7 @@ class Learning(commands.Cog):
         """Introduction first of all all."""
         intro_list = pintro()
         for data in intro_list:
-            if type(data) is int:
+            if isinstance(data, int):
                 await asyncio.sleep(data)
             else:
                 embed = discord.Embed(title="Introduction", color=await self.bot.get_embed_colour(ctx), description=data)
@@ -55,7 +55,7 @@ class Learning(commands.Cog):
         """Some useful links to learn more on Python."""
         refs_list = pref()
         for data in refs_list:
-            if type(data) is int:
+            if isinstance(data, int):
                 await asyncio.sleep(data)
             else:
                 embed = discord.Embed(title="References", color=await self.bot.get_embed_colour(ctx), description=data)
@@ -71,7 +71,7 @@ class Learning(commands.Cog):
             return
         datas_list = plvl1()
         for data in datas_list:
-            if type(data) is int:
+            if isinstance(data, int):
                 await asyncio.sleep(data)
             else:
                 embed = discord.Embed(title="Installing and launching Python", color=await self.bot.get_embed_colour(ctx), description=data)
@@ -88,7 +88,7 @@ class Learning(commands.Cog):
             return
         datas_list = plvl2()
         for data in datas_list:
-            if type(data) is int:
+            if isinstance(data, int):
                 await asyncio.sleep(data)
             else:
                 embed = discord.Embed(title="Variables", color=await self.bot.get_embed_colour(ctx), description=data)
