@@ -3,5 +3,4 @@
   "description": "Retrieve statistics about the Covid-19.",
   "short": "Retrieve statistics about the Covid-19.",
   "install_msg": "This cog has reached EoL (End of Life). But feel free to open a pull request to the repository.",
-  "hidden": true
 }
