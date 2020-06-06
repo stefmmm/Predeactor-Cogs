@@ -98,7 +98,7 @@ class Learning(commands.Cog):
     @lpy.command(name="level3")
     async def lv3(self, ctx: commands.Context):
         """Start the level 3.
-        
+
         Let's learn the differents datas type."""
         if await self.data.user(ctx.author).lvl3() is False:
             await ctx.send("Uh oh, seem you didn't even completed the level 2.")
