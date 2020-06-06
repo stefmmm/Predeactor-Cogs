@@ -110,4 +110,3 @@ class Learning(commands.Cog):
             else:
                 embed = discord.Embed(title="Type of Datas", color=await self.bot.get_embed_colour(ctx), description=data)
                 await ctx.send(embed=embed)
-        # await self.data.user(ctx.author).lvl4.set(True)
