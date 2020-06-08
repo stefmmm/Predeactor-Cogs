@@ -104,9 +104,3 @@ class CleverBot(Core):
             await ctx.send("API key for `travitia` registered.")
         else:
             await ctx.send_help()
-
-    @checks.is_owner()
-    @commands.command()
-    async def seeconv(self, ctx: commands.Context):
-        """Remove the API key, for tests only."""
-        await ctx.send(str(self.conversation))
