@@ -7,6 +7,8 @@ from redbot.core import commands, checks
 from .core import Core, apicheck
 
 log = logging.getLogger("predeactor.cleverbot")
+
+
 class CleverBot(Core):
     """Ask questions to Cleverbot or even start a Conversation with her!"""
 
@@ -42,7 +44,7 @@ class CleverBot(Core):
             )
             cleverbot = await self.make_cleverbot_session()
 
-            while True: # Logic is from Laggron's Say cog
+            while True:  # Logic is from Laggron's Say cog
                 try:
                     message = await self.bot.wait_for("message", timeout=300)
                 except asyncio.TimeoutError:
@@ -58,17 +60,23 @@ class CleverBot(Core):
                     if message.content.lower() == "close":
                         await self.remove_user(ctx.channel.id, ctx.author.id, cleverbot)
                         await cleverbot.close()
-                        await ctx.send('Conversation closed.')
+                        await ctx.send("Conversation closed.")
                         return
                     async with ctx.typing():
-                        await ctx.send(message.author.mention + ", " + str(await self.ask_question(cleverbot, message.content)))
+                        await ctx.send(
+                            message.author.mention
+                            + ", "
+                            + str(await self.ask_question(cleverbot, message.content))
+                        )
 
         except Exception as e:
             await ctx.send(f"An error happened: {e}")
-            log.warning('Exception while parsing the command {prefix}conversation: {e}.\nIf this error occur again or seem related to code issue, please contact the cog author.')
+            log.warning(
+                "Exception while parsing the command {prefix}conversation: {e}.\nIf this error occur again or seem related to code issue, please contact the cog author."
+            )
             try:
                 await self.close_cleverbot(cleverbot)
-            except UnboundLocalError: # Happens if there's no session
+            except UnboundLocalError:  # Happens if there's no session
                 log.warning("No session has been found.")
                 pass
 

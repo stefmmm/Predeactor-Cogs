@@ -26,7 +26,7 @@ class Core(commands.Cog):
         self._init_logger()
         super().__init__()
 
-# Cog informations
+    # Cog informations
 
     def _init_logger(self):
         log_format = logging.Formatter(
@@ -40,12 +40,12 @@ class Core(commands.Cog):
         """Thanks Sinbad!"""
         pre_processed = super().format_help_for_context(ctx)
         return "{pre_processed}\n\nAuthor: {authors}\nCog Version: {version}".format(
-            pre_processed=pre_processed, 
-            authors=humanize_list(self.__author__), 
-            version=self.__version__
+            pre_processed=pre_processed,
+            authors=humanize_list(self.__author__),
+            version=self.__version__,
         )
 
-# Cog functions
+    # Cog functions
 
     async def get_api_key(self):
         travitia = await self.bot.get_shared_api_tokens("travitia")
@@ -83,15 +83,13 @@ class Core(commands.Cog):
     async def remove_user(self, channel_id: int, user_id: int, session):
         try:
             if len(self.conversation[str(channel_id)]) == 1:
-                del self.conversation[
-                    str(channel_id)
-                ] # Remove channel ID
+                del self.conversation[str(channel_id)]  # Remove channel ID
                 return
-            self.conversation[str(channel_id)].remove(user_id) # Only remove user
+            self.conversation[str(channel_id)].remove(user_id)  # Only remove user
         except KeyError:
             await self.close_cleverbot(session)
 
-# Close methods
+    # Close methods
 
     async def close_by_timeout(self, ctx: commands.Context, session):
         messages = [
@@ -108,6 +106,7 @@ class Core(commands.Cog):
 
     def cog_unload(self):
         self.conversation = {}
+
 
 def apicheck():
     """

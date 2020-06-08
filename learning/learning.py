@@ -5,26 +5,23 @@ import asyncio
 from redbot.core import commands, Config
 from .lessons import *
 
+
 class Learning(commands.Cog):
-    
+
     """This cog is made for learning the Python basics and how to make your own cog on Red.
     
     Cog has reached EoL (End of Life), it mean that I won't give support, enhancement,
      new lessons or anything else to this cog. However, you can open a pull request
      and do change by yourself."""
 
-    __author__ = ['Predeactor']
-    __version__ = 'Last - EoL'
+    __author__ = ["Predeactor"]
+    __version__ = "Last - EoL"
 
     def __init__(self, bot):
         self.bot = bot
         self.data = Config.get_conf(self, identifier=495954054)
 
-        self.data.register_user(
-            lvl1=False,
-            lvl2=False,
-            lvl3=False
-        )
+        self.data.register_user(lvl1=False, lvl2=False, lvl3=False)
 
         super().__init__()
 
@@ -46,7 +43,11 @@ class Learning(commands.Cog):
             if isinstance(data, int):
                 await asyncio.sleep(data)
             else:
-                embed = discord.Embed(title="Introduction", color=await self.bot.get_embed_colour(ctx), description=data)
+                embed = discord.Embed(
+                    title="Introduction",
+                    color=await self.bot.get_embed_colour(ctx),
+                    description=data,
+                )
                 await ctx.send(embed=embed)
         await self.data.user(ctx.author).lvl1.set(True)
 
@@ -58,7 +59,11 @@ class Learning(commands.Cog):
             if isinstance(data, int):
                 await asyncio.sleep(data)
             else:
-                embed = discord.Embed(title="References", color=await self.bot.get_embed_colour(ctx), description=data)
+                embed = discord.Embed(
+                    title="References",
+                    color=await self.bot.get_embed_colour(ctx),
+                    description=data,
+                )
                 await ctx.send(embed=embed)
 
     @lpy.command(name="level1")
@@ -74,7 +79,11 @@ class Learning(commands.Cog):
             if isinstance(data, int):
                 await asyncio.sleep(data)
             else:
-                embed = discord.Embed(title="Installing and launching Python", color=await self.bot.get_embed_colour(ctx), description=data)
+                embed = discord.Embed(
+                    title="Installing and launching Python",
+                    color=await self.bot.get_embed_colour(ctx),
+                    description=data,
+                )
                 await ctx.send(embed=embed)
         await self.data.user(ctx.author).lvl2.set(True)
 
@@ -84,16 +93,22 @@ class Learning(commands.Cog):
         
         Let's learn how to use variables."""
         if await self.data.user(ctx.author).lvl2() is False:
-            await ctx.send("Uh oh, seem you didn't even completed the level 1. I won't let you learn variables if you don't know how to launch Python.")
+            await ctx.send(
+                "Uh oh, seem you didn't even completed the level 1. I won't let you learn variables if you don't know how to launch Python."
+            )
             return
         datas_list = plvl2()
         for data in datas_list:
             if isinstance(data, int):
                 await asyncio.sleep(data)
             else:
-                embed = discord.Embed(title="Variables", color=await self.bot.get_embed_colour(ctx), description=data)
+                embed = discord.Embed(
+                    title="Variables",
+                    color=await self.bot.get_embed_colour(ctx),
+                    description=data,
+                )
                 await ctx.send(embed=embed)
-        await self.data.user(ctx.author).lvl3.set(True) 
+        await self.data.user(ctx.author).lvl3.set(True)
 
     @lpy.command(name="level3")
     async def lv3(self, ctx: commands.Context):
@@ -108,5 +123,9 @@ class Learning(commands.Cog):
             if isinstance(data, int):
                 await asyncio.sleep(data)
             else:
-                embed = discord.Embed(title="Type of Datas", color=await self.bot.get_embed_colour(ctx), description=data)
+                embed = discord.Embed(
+                    title="Type of Datas",
+                    color=await self.bot.get_embed_colour(ctx),
+                    description=data,
+                )
                 await ctx.send(embed=embed)
