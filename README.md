@@ -2,6 +2,9 @@
 
 <p align="center">
   <img src="https://repository-images.githubusercontent.com/245725383/2fbcee00-906c-11ea-8da9-ecbb66c5b7d4">
+  <img src="https://img.shields.io/badge/Made%20for-Red%20v3-red?style=for-the-badge&logo=discord">
+  <a href="https://www.codefactor.io/repository/github/predeactor/predeactor-cogs"><img src="https://www.codefactor.io/repository/github/predeactor/predeactor-cogs/badge" alt="CodeFactor" /></a>
+  
 </p>
 
 This is a repo made for [Red](https://github.com/Cog-Creators/Red-DiscordBot).
