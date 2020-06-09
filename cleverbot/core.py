@@ -124,7 +124,6 @@ def apicheck():
             await ctx.send("The API key is not registered, the command is unavailable.")
             log.warning("Command has been refused. Missing API key for Travitia.")
             return False
-        else:
-            return True
+        return True
 
     return commands.check(predicate)
