@@ -54,11 +54,11 @@ class Core(commands.Cog):
         return travitia.get("api_key")
 
     async def make_cleverbot_session(self):
-        cleverbot_session = ac.Cleverbot(await self.get_api_key())
+        cleverbot_session = ac.Cleverbot(await self.get_api_key(), ac.DictContext())
         return cleverbot_session
 
-    async def ask_question(self, session, question: str):
-        answer = await session.ask(question)
+    async def ask_question(self, session, question: str, user_id: Optional[int] = None):
+        answer = await session.ask(question, user_id if user_id is not None else "00")
         return answer
 
     async def check_user_in_conversation(self, ctx: commands.Context):
@@ -117,10 +117,11 @@ def apicheck():
 
     async def predicate(ctx: commands.Context):
         travitia_keys = await ctx.bot.get_shared_api_tokens("travitia")
-        if ctx.invoked_with == "help" and travitia_keys.get("api_key") is None:
+        key = travitia_keys.get("api_key") is None
+        if ctx.invoked_with == "help" and key:
             await ctx.send("Missing the API key, some commands won't be available.")
             return False
-        if travitia_keys.get("api_key") is None:
+        if key:
             await ctx.send("The API key is not registered, the command is unavailable.")
             log.warning("Command has been refused. Missing API key for Travitia.")
             return False

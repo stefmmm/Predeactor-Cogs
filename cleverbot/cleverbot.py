@@ -22,7 +22,7 @@ class CleverBot(Core):
         asking a single question."""
         async with ctx.typing():
             session = await self.make_cleverbot_session()
-            await ctx.send(await self.ask_question(session, question))
+            await ctx.send(await self.ask_question(session, question, ctx.author.id))
             await session.close()
 
     @apicheck()
@@ -38,9 +38,9 @@ class CleverBot(Core):
                 return
 
             await ctx.send(
-                "Starting a new Cleverbot session!\n\nSay `close` to stop the conversation with me"
-                " !\n\nAfter 5 minutes without answer, I will automatically close your "
-                "conversation."
+                "Starting a new Cleverbot session!\n\nSay `close` to stop the "
+                "conversation with me !\n\nAfter 5 minutes without answer, I "
+                "will automatically close your conversation."
             )
             cleverbot = await self.make_cleverbot_session()
 
@@ -58,7 +58,9 @@ class CleverBot(Core):
                     continue
                 if message.author == user:
                     if message.content.lower() == "close":
-                        await self.remove_user(ctx.channel.id, ctx.author.id, cleverbot)
+                        await self.remove_user(
+                            ctx.channel.id, ctx.author.id, cleverbot
+                        )
                         await cleverbot.close()
                         await ctx.send("Conversation closed.")
                         return
@@ -66,13 +68,19 @@ class CleverBot(Core):
                         await ctx.send(
                             message.author.mention
                             + ", "
-                            + str(await self.ask_question(cleverbot, message.content))
+                            + str(
+                                await self.ask_question(
+                                    cleverbot, message.content, ctx.author.id
+                                )
+                            )
                         )
 
         except Exception as e:
             await ctx.send(f"An error happened: {e}")
             log.warning(
-                "Exception while parsing the command {prefix}conversation: {e}.\nIf this error occur again or seem related to code issue, please contact the cog author."
+                "Exception while parsing the command {prefix}conversation: {e}."
+                "\nIf this error occur again or seem related to code issue, please "
+                "contact the cog author."
             )
             try:
                 await self.close_cleverbot(cleverbot)
@@ -82,7 +90,7 @@ class CleverBot(Core):
 
     @checks.is_owner()
     @commands.command(name="settraviliaapikey")
-    async def travailiaapikey(self, ctx: commands.Context, api_key: str = None):
+    async def travailiaapikey(self, ctx: commands.Context, api_key: str):
         """Set the API key for Travitia API.
         
         To set the API key:
@@ -92,15 +100,13 @@ class CleverBot(Core):
         4. Wait for the staff to accept your application.
         5. When you receive your key, use this command again with your API key.
         """
-        if api_key:
-            await ctx.bot.set_shared_api_tokens("travitia", api_key=api_key)
-            try:
-                await ctx.message.delete()
-            except Exception:
-                await ctx.send(
-                    "Please delete your message, token is sensitive and should be keeped secret."
-                )
-                pass
-            await ctx.send("API key for `travitia` registered.")
-        else:
-            await ctx.send_help()
+        await ctx.bot.set_shared_api_tokens("travitia", api_key=api_key)
+        try:
+            await ctx.message.delete()
+        except Exception:
+            await ctx.send(
+                "Please delete your message, token is sensitive and should be"
+                " keeped secret."
+            )
+            pass
+        await ctx.send("API key for `travitia` registered.")
