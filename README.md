@@ -11,14 +11,17 @@ This is a repo made for [Red](https://github.com/Cog-Creators/Red-DiscordBot).
 
 # Sweet Sweet Updates ! (12/06/2020)
 
-Hey everyone, as I said, 
+Hey everyone, as I said, *and if I don't forget to fill this readme...*, I uploaded the brand new cog Cleverbot, which is completely free!
+However, this cog is in Alpha, it mean that it's brand new and may have undesired behavior.
+
+So, what now? Well, I'm thinking about a captcha cog. An image is sent, and you have to type the same number.
 
 ## Available cogs list
 
 | Cog Name     | Description                                          | Version    |
 | ------------ | ---------------------------------------------------- | ---------- |
 | Coronavirus  | Get stats about the Coronavirus.                     | Finished   |
-| Cleverbot    | Talk or ask a question to cleverbot                  | Finished   |
+| Cleverbot    | Talk or ask a question to cleverbot                  | Alpha 0.5  |
 
 ## Hidden cogs
 
@@ -34,4 +37,4 @@ If you're having any important(s) issue(s), open an issue or pull request to thi
 
 ## Soon
 
-Finishing a free Cleverbot cog.
+A Captcha cog?
