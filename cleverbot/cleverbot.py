@@ -58,9 +58,7 @@ class CleverBot(Core):
                     continue
                 if message.author == user:
                     if message.content.lower() == "close":
-                        await self.remove_user(
-                            ctx.channel.id, ctx.author.id, cleverbot
-                        )
+                        await self.remove_user(ctx.channel.id, ctx.author.id, cleverbot)
                         await cleverbot.close()
                         await ctx.send("Conversation closed.")
                         return
