@@ -79,7 +79,7 @@ class CleverBot(Core):
                 "Exception while parsing the command {prefix}conversation: {e}."
                 "\nIf this error occur again or seem related to code issue, please "
                 "contact the cog author."
-            )
+            ).format(prefix=ctx.prefix, e=e)
             try:
                 await self.close_cleverbot(cleverbot)
             except UnboundLocalError:  # Happens if there's no session
