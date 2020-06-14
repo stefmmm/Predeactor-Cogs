@@ -62,6 +62,10 @@ class CleverBot(Core):
                         await cleverbot.close()
                         await ctx.send("Conversation closed.")
                         return
+                    if message.content.startswith(
+                        tuple(await self.bot.get_valid_prefixes())
+                    ):
+                        continue
                     async with ctx.typing():
                         await ctx.send(
                             message.author.mention
