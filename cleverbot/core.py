@@ -54,7 +54,7 @@ class Core(commands.Cog):
         return travitia.get("api_key")
 
     async def make_cleverbot_session(self):
-        cleverbot_session = ac.Cleverbot(await self.get_api_key(), ac.DictContext())
+        cleverbot_session = ac.Cleverbot(await self.get_api_key(), context=ac.DictContext())
         return cleverbot_session
 
     async def ask_question(self, session, question: str, user_id: Optional[int] = None):
@@ -67,8 +67,8 @@ class Core(commands.Cog):
                 await ctx.send("A conversation is already running.")
                 return True
         except KeyError:
-            pass
-        await self.add_user(ctx.channel.id, ctx.author.id)
+            await self.add_user(ctx.channel.id, ctx.author.id)
+        return False
 
     def check_channel_in_conversation(self, ctx: commands.Context, channel_id: int):
         if str(channel_id) not in self.conversation:
