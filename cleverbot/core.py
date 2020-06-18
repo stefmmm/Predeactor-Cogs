@@ -54,7 +54,9 @@ class Core(commands.Cog):
         return travitia.get("api_key")
 
     async def make_cleverbot_session(self):
-        cleverbot_session = ac.Cleverbot(await self.get_api_key(), context=ac.DictContext())
+        cleverbot_session = ac.Cleverbot(
+            await self.get_api_key(), context=ac.DictContext()
+        )
         return cleverbot_session
 
     async def ask_question(self, session, question: str, user_id: Optional[int] = None):
