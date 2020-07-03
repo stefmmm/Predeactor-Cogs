@@ -60,7 +60,13 @@ class Core(commands.Cog):
         return cleverbot_session
 
     async def ask_question(self, session, question: str, user_id: Optional[int] = None):
-        answer = await session.ask(question, user_id if user_id is not None else "00")
+        try:
+            answer = await session.ask(question, user_id if user_id is not None else "00")
+        except Exception as e:
+            answer = "An error happened: {error}. Please try again later. Session closed.".format(
+                error=str(e)
+            )
+            await close_cleverbot(session)
         return answer
 
     async def check_user_in_conversation(self, ctx: commands.Context):
