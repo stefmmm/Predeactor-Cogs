@@ -13,16 +13,21 @@ This is a repo made for [Red](https://github.com/Cog-Creators/Red-DiscordBot).
 | Cog Name     | Description                                          | Version    |
 | ------------ | ---------------------------------------------------- | ---------- |
 | Coronavirus  | Get stats about the Coronavirus.                     | Finished   |
-| Cleverbot    | Talk or ask a question to cleverbot                  | Alpha 0.5  |
+| Cleverbot    | Talk or ask a question to cleverbot.                 | Alpha 0.5  |
+| LeaderBoard  | Global eputation system using points.                | Beta 0.7   | 
 
 ## Hidden cogs
 
-| Cog Name     | Description                                          | Version    |
-| ------------ | ---------------------------------------------------- | ---------- |
-| Learning     | Receive some tutorials about Python.                 | EoL        |
+| Cog Name     | Description                                          | Version    | Reason      |
+| ------------ | ---------------------------------------------------- | ---------- | ----------- |
+| Learning     | Receive some tutorials about Python.                 | EoL        | End of life |
 
 ## Support
 
 Contact me at `Capitaine Predeactor#0495` or find me on the [Red Discord Server](https://discord.gg/red). I will be glad to help you.
 
 If you're having any important(s) issue(s), open an issue or pull request to this repo.
+
+## Credits (AKA. Awesome peoples)
+
+`Leaderboard Cog`: fixator10 for the repboard command logic.
