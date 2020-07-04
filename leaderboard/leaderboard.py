@@ -73,7 +73,7 @@ class LeaderBoard(commands.Cog):
                 receiver=await self._user_mention(user),
                 author=ctx.author,
                 reps=user_points + 1,
-                plurial="s" if (user_points + 1) > 1 else ""
+                plurial="s" if (user_points + 1) > 1 else "",
             )
         )
 
@@ -165,6 +165,6 @@ class LeaderBoard(commands.Cog):
         if user is None:  # User not found
             try:
                 user = self.bot.fetch_user(user_id)
-            except (NotFound, HTTPException):
+            except (discord.NotFound, discord.HTTPException):
                 return "Unknow User"
         return user.name

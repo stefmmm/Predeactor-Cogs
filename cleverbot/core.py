@@ -59,9 +59,13 @@ class Core(commands.Cog):
         )
         return cleverbot_session
 
-    async def _ask_question(self, session, question: str, user_id: Optional[int] = None):
+    async def _ask_question(
+        self, session, question: str, user_id: Optional[int] = None
+    ):
         try:
-            answer = await session.ask(question, user_id if user_id is not None else "00")
+            answer = await session.ask(
+                question, user_id if user_id is not None else "00"
+            )
         except Exception as e:
             answer = "An error happened: {error}. Please try again later. Session closed.".format(
                 error=str(e)
