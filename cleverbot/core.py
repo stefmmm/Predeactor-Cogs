@@ -47,29 +47,29 @@ class Core(commands.Cog):
 
     # Cog functions
 
-    async def get_api_key(self):
+    async def _get_api_key(self):
         travitia = await self.bot.get_shared_api_tokens("travitia")
         # No need to check if the API key is not registered, the
         # @apicheck() do it automatically.
         return travitia.get("api_key")
 
-    async def make_cleverbot_session(self):
+    async def _make_cleverbot_session(self):
         cleverbot_session = ac.Cleverbot(
             await self.get_api_key(), context=ac.DictContext()
         )
         return cleverbot_session
 
-    async def ask_question(self, session, question: str, user_id: Optional[int] = None):
+    async def _ask_question(self, session, question: str, user_id: Optional[int] = None):
         try:
             answer = await session.ask(question, user_id if user_id is not None else "00")
         except Exception as e:
             answer = "An error happened: {error}. Please try again later. Session closed.".format(
                 error=str(e)
             )
-            await close_cleverbot(session)
+            await self._close_cleverbot(session)
         return answer
 
-    async def check_user_in_conversation(self, ctx: commands.Context):
+    async def _check_user_in_conversation(self, ctx: commands.Context):
         try:
             if ctx.author.id in self.conversation[str(ctx.message.channel.id)]:
                 await ctx.send("A conversation is already running.")
@@ -78,17 +78,17 @@ class Core(commands.Cog):
             await self.add_user(ctx.channel.id, ctx.author.id)
         return False
 
-    def check_channel_in_conversation(self, ctx: commands.Context, channel_id: int):
+    def _check_channel_in_conversation(self, ctx: commands.Context, channel_id: int):
         if str(channel_id) not in self.conversation:
             return True
         return False
 
-    async def add_user(self, channel_id: int, user_id: int):
+    async def _add_user(self, channel_id: int, user_id: int):
         if str(channel_id) not in self.conversation:
             self.conversation[str(channel_id)] = []
         self.conversation[str(channel_id)].append(user_id)
 
-    async def remove_user(self, channel_id: int, user_id: int, session):
+    async def _remove_user(self, channel_id: int, user_id: int, session):
         try:
             if len(self.conversation[str(channel_id)]) == 1:
                 del self.conversation[str(channel_id)]  # Remove channel ID
@@ -99,7 +99,7 @@ class Core(commands.Cog):
 
     # Close methods
 
-    async def close_by_timeout(self, ctx: commands.Context, session):
+    async def _close_by_timeout(self, ctx: commands.Context, session):
         messages = [
             "5 minutes without messages ? Sorry but I have to close your conversation.",
             "Sorry but after 5 minutes, I close your conversation.",
@@ -109,11 +109,12 @@ class Core(commands.Cog):
         await ctx.send(random.choice(messages))
         await self.remove_user(ctx.channel.id, ctx.author.id, session)
 
-    async def close_cleverbot(self, session):
+    async def _close_cleverbot(self, session):
         await session.close()
 
     def cog_unload(self):
-        self.conversation = {}
+        if self.conversation:
+            self.conversation = {}
 
 
 def apicheck():

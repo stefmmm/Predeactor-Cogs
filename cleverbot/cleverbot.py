@@ -21,8 +21,8 @@ class CleverBot(Core):
         You won't have a discussion with Cleverbot, you're just 
         asking a single question."""
         async with ctx.typing():
-            session = await self.make_cleverbot_session()
-            await ctx.send(await self.ask_question(session, question, ctx.author.id))
+            session = await self._make_cleverbot_session()
+            await ctx.send(await self._ask_question(session, question, ctx.author.id))
             await session.close()
 
     @apicheck()
@@ -33,7 +33,7 @@ class CleverBot(Core):
         user = ctx.author
 
         try:
-            result = await self.check_user_in_conversation(ctx)
+            result = await self._check_user_in_conversation(ctx)
             if result is True:
                 return
 
@@ -42,23 +42,23 @@ class CleverBot(Core):
                 "conversation with me !\n\nAfter 5 minutes without answer, I "
                 "will automatically close your conversation."
             )
-            cleverbot = await self.make_cleverbot_session()
+            cleverbot = await self._make_cleverbot_session()
 
             while True:  # Logic is from Laggron's Say cog
                 try:
                     message = await self.bot.wait_for("message", timeout=300)
                 except asyncio.TimeoutError:
-                    await self.close_by_timeout(ctx, cleverbot)
+                    await self._close_by_timeout(ctx, cleverbot)
                     await cleverbot.close()
                     return
-                result = self.check_channel_in_conversation(ctx, message.channel.id)
+                result = self._check_channel_in_conversation(ctx, message.channel.id)
                 if result is True:
                     return
                 if message.channel != ctx.channel:
                     continue
                 if message.author == user:
                     if message.content.lower() == "close":
-                        await self.remove_user(ctx.channel.id, ctx.author.id, cleverbot)
+                        await self._remove_user(ctx.channel.id, ctx.author.id, cleverbot)
                         await cleverbot.close()
                         await ctx.send("Conversation closed.")
                         return
@@ -71,7 +71,7 @@ class CleverBot(Core):
                             message.author.mention
                             + ", "
                             + str(
-                                await self.ask_question(
+                                await self._ask_question(
                                     cleverbot, message.content, ctx.author.id
                                 )
                             )
@@ -85,7 +85,7 @@ class CleverBot(Core):
                 "contact the cog author."
             ).format(prefix=ctx.prefix, e=e)
             try:
-                await self.close_cleverbot(cleverbot)
+                await self._close_cleverbot(cleverbot)
             except UnboundLocalError:  # Happens if there's no session
                 log.warning("No session has been found.")
                 pass
