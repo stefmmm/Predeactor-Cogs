@@ -1,0 +1,6 @@
+{
+    "author": ["Predeactor"],
+    "description": "A global reputation system using points.",
+    "short": "Global reputation points.",
+    "install_msg": "Thank for installing my leaderboard cog! Cog is in beta phase, meaning bugs and unexpected bahavior may happens, but not as often as alpha could be. If so, please report those in my repo."
+}  

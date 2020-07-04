@@ -87,15 +87,15 @@ class LeaderBoard(commands.Cog):
     async def repboard(self, ctx, page_list: int = 1):
         users = []
         title = "Global Rep Leaderboard for {}\n".format(self.bot.user.name)
-        all = await self.data.all_users()
-        if str(all) == "{}":
+        all_users = await self.data.all_users()
+        if str(all_users) == "{}":
             await ctx.send("The leaderboard is empty... Nobody's popular ¯\_(ツ)_/¯")
             return
-        for user_id in all:
+        for user_id in all_users:
             user_name = await self._get_user(user_id)
-            users.append((user_name, all[user_id]["points"]))
+            users.append((user_name, all_users[user_id]["points"]))
             if ctx.author.id == user_id:
-                user_stat = all[user_id]["points"]
+                user_stat = all_users[user_id]["points"]
 
         board_type = "Rep"
         icon_url = self.bot.user.avatar_url

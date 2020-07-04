@@ -14,7 +14,7 @@ This is a repo made for [Red](https://github.com/Cog-Creators/Red-DiscordBot).
 | ------------ | ---------------------------------------------------- | ---------- |
 | Coronavirus  | Get stats about the Coronavirus.                     | Finished   |
 | Cleverbot    | Talk or ask a question to cleverbot.                 | Alpha 0.5  |
-| LeaderBoard  | Global eputation system using points.                | Beta 0.7   | 
+| LeaderBoard  | Global reputation system using points.               | Beta 0.7   | 
 
 ## Hidden cogs
 
