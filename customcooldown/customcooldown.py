@@ -310,4 +310,3 @@ class CustomCooldown(commands.Cog):
             await self.handle_category_cooldown(
                 message, cooldown_categories, send_dm=send_dm
             )
-
