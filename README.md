@@ -10,11 +10,12 @@ This is a repo made for [Red](https://github.com/Cog-Creators/Red-DiscordBot).
 
 ## Available cogs list
 
-| Cog Name     | Description                                          | Version    |
-| ------------ | ---------------------------------------------------- | ---------- |
-| Coronavirus  | Get stats about the Coronavirus.                     | Finished   |
-| Cleverbot    | Talk or ask a question to cleverbot.                 | Alpha 0.5  |
-| LeaderBoard  | Global reputation system using points.               | Beta 0.7   | 
+| Cog Name       | Description                                           | Version    |
+| -------------- | ----------------------------------------------------- | ---------- |
+| Coronavirus    | Get stats about the Coronavirus.                      | Finished   |
+| Cleverbot      | Talk or ask a question to cleverbot.                  | Alpha 0.5  |
+| LeaderBoard    | Global reputation system using points.                | Beta 0.7   |
+| CustomCooldown | Custom slowmode/cooldown moderated by the bot itself. | 1.0        |
 
 ## Hidden cogs
 
@@ -30,4 +31,5 @@ If you're having any important(s) issue(s), open an issue or pull request to thi
 
 ## Credits (AKA. Awesome peoples)
 
-`Leaderboard Cog`: fixator10 for the repboard command logic.
+`Leaderboard Cog` : **fixator10** for the repboard command logic.
+`CustomCooldown` : **jacob** as the original requester who allowed me to push the cog to my repo and **Maaz** as the original code creator.
