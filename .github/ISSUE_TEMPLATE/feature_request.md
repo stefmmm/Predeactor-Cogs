@@ -11,9 +11,9 @@ assignees: ''
 
 <!--- Put `X` between the brackets where necessary. -->
 
-[ ] Related to an issue: (Mention the issue)
-[ ] Breaking change(s).
-[ ] Related to a cog. (Tell what cog)
+- [ ] Related to an issue: (Mention the issue)
+- [ ] Breaking change(s).
+- [ ] Related to a cog. (Tell what cog)
 
 # Contents
 
