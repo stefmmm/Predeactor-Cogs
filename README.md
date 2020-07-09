@@ -13,15 +13,15 @@ This is a repo made for [Red](https://github.com/Cog-Creators/Red-DiscordBot).
 | Cog Name       | Description                                           | Version    |
 | -------------- | ----------------------------------------------------- | ---------- |
 | Coronavirus    | Get stats about the Coronavirus.                      | Finished   |
+| CleverBot      | Talk or ask a question to CleverBot.                  | Beta 0.7   |
 | LeaderBoard    | Global reputation system using points.                | Beta 0.7   |
-| CustomCooldown | Custom slowmode/cooldown moderated by the bot itself. | 1.1        |
+| CustomCooldown | Custom slowmode/cooldown moderated by the bot itself. | v1.1       |
 
 ## Hidden cogs
 
 | Cog Name     | Description                                          | Version    | Reason      |
 | ------------ | ---------------------------------------------------- | ---------- | ----------- |
 | Learning     | Receive some tutorials about Python.                 | EoL        | End of life |
-| Cleverbot    | Talk or ask a question to cleverbot.                 | Alpha 0.5  | In Alpha    |
 
 
 ## Support
