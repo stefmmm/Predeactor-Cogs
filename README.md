@@ -31,5 +31,5 @@ If you're having any important(s) issue(s), open an issue or pull request to thi
 
 ## Credits (AKA. Awesome peoples)
 
-`Leaderboard Cog` : **fixator10** for the repboard command logic.
-`CustomCooldown` : **jacob** as the original requester who allowed me to push the cog to my repo and **Maaz** as the original code creator.
+- `Leaderboard Cog` : **fixator10** for the repboard command logic.
+- `CustomCooldown` : **jacob** as the original requester who allowed me to push the cog to my repo and **Maaz** as the original code creator.
