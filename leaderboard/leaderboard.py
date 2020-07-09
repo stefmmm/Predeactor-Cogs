@@ -26,7 +26,11 @@ class LeaderBoard(commands.Cog):
     def format_help_for_context(self, ctx: commands.Context) -> str:
         """Thanks Sinbad!"""
         pre_processed = super().format_help_for_context(ctx)
-        return f"{pre_processed}\n\nAuthor: {', '.join(self.__author__)}\nCog Version: {self.__version__}"
+        return "{pre_processed}\n\nAuthor: {authors}\nCog Version: {version}".format(
+            pre_processed=pre_processed,
+            authors=humanize_list(self.__author__),
+            version=self.__version__,
+        )
 
     @commands.command()
     @commands.guild_only()
