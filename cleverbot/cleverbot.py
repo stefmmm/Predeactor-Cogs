@@ -1,9 +1,11 @@
+import asyncio
 import discord
 import logging
-import asyncio
 import random
 
+from datetime import datetime
 from redbot.core import commands, checks
+
 from .core import Core, apicheck
 
 log = logging.getLogger("predeactor.cleverbot")
@@ -22,95 +24,95 @@ class CleverBot(Core):
         asking a single question."""
         async with ctx.typing():
             session = await self._make_cleverbot_session()
-            await ctx.send(await self._ask_question(session, question, ctx.author.id))
+            answer, answered = await self._ask_question(
+                session, question, ctx.author.id
+            )
+            if answered:
+                message = "{user}, {answer}".format(user=ctx.author.name, answer=answer)
+            else:
+                message = answer
             await session.close()
+            await ctx.send(message)
 
     @apicheck()
     @commands.command()
     async def conversation(self, ctx: commands.Context):
         """Start a conversation with Cleverbot
         You don't need to use a prefix or the command using this mode."""
-        user = ctx.author
 
-        try:
-            result = await self._check_user_in_conversation(ctx)
-            if result is True:
-                return
-
+        if str(ctx.author.id) in self.conversation:
             await ctx.send(
-                "Starting a new Cleverbot session!\n\nSay `close` to stop the "
-                "conversation with me !\n\nAfter 5 minutes without answer, I "
-                "will automatically close your conversation."
+                "There's already a conversation running. Say `close` to " "stop it."
             )
-            cleverbot = await self._make_cleverbot_session()
+            return
 
-            while True:  # Logic is from Laggron's Say cog
-                try:
-                    message = await self.bot.wait_for("message", timeout=300)
-                except asyncio.TimeoutError:
-                    await self._close_by_timeout(ctx, cleverbot)
-                    await cleverbot.close()
-                    return
-                result = self._check_channel_in_conversation(ctx, message.channel.id)
-                if result is True:
-                    return
-                if message.channel != ctx.channel:
-                    continue
-                if message.author == user:
-                    if message.content.lower() == "close":
-                        await self._remove_user(
-                            ctx.channel.id, ctx.author.id, cleverbot
-                        )
-                        await cleverbot.close()
-                        await ctx.send("Conversation closed.")
-                        return
-                    if message.content.startswith(
-                        tuple(await self.bot.get_valid_prefixes())
-                    ):
-                        continue
-                    async with ctx.typing():
-                        await ctx.send(
-                            message.author.mention
-                            + ", "
-                            + str(
-                                await self._ask_question(
-                                    cleverbot, message.content, ctx.author.id
-                                )
-                            )
-                        )
+        session = await self._make_cleverbot_session()
+        data = {
+            "session": session,
+            "channel": ctx.channel.id,
+            "timer": datetime.now(),
+            "typing": False,
+        }
+        self.conversation[str(ctx.author.id)] = data
 
-        except Exception as e:
-            await ctx.send(f"An error happened: {e}")
-            log.warning(
-                "Exception while parsing the command {prefix}conversation: {e}."
-                "\nIf this error occur again or seem related to code issue, please "
-                "contact the cog author."
-            ).format(prefix=ctx.prefix, e=e)
-            try:
-                await self._close_cleverbot(cleverbot)
-            except UnboundLocalError:  # Happens if there's no session
-                log.warning("No session has been found.")
-                pass
+        await ctx.send(
+            "Starting a new Cleverbot session!\n\nSay `close` to stop the conversation"
+            " with me !\n\nYour conversation will be automatically closed if CleverBot"
+            " receive no answer.\nThis conversation is only available in this channel."
+        )
 
-    @checks.is_owner()
-    @commands.command(name="settraviliaapikey")
-    async def travailiaapikey(self, ctx: commands.Context, api_key: str):
-        """Set the API key for Travitia API.
-        
-        To set the API key:
-        1. Go to [this server](https://discord.gg/s4fNByu).
-        2. Go to #playground and use `> api`.
-        3. Say yes and give some explanation.
-        4. Wait for the staff to accept your application.
-        5. When you receive your key, use this command again with your API key.
+    @commands.Cog.listener()
+    async def on_message(self, message: discord.Message):
+        """Checks for CleverBot.
+        If user in self.conversation, a message will be sent with CleverBot's answer.
+        Else code is exited.
         """
-        await ctx.bot.set_shared_api_tokens("travitia", api_key=api_key)
-        try:
-            await ctx.message.delete()
-        except Exception:
-            await ctx.send(
-                "Please delete your message, token is sensitive and should be"
-                " keeped secret."
+        ctx = await self.bot.get_context(message)
+        session = self.conversation[str(ctx.author.id)]["session"]
+        timer = self.conversation[str(ctx.author.id)]["timer"]
+        channel = self.conversation[str(ctx.author.id)]["channel"]
+
+        # If user is not using conversation
+        if str(ctx.author.id) not in self.conversation:
+            return
+        # If the timer is exceded.
+        if (datetime.now() - timer).seconds > 300:
+            channel = self.bot.get_channel(channel)
+            await channel.send(self._message_by_timeout())
+            await session.close()
+            del self.conversation[str(ctx.author.id)]
+            return
+        # If message is not in the good channel
+        if ctx.channel.id is not channel:
+            return
+        # If bot is typing
+        if self.conversation[str(ctx.author.id)]["typing"]:
+            return
+        # If the string start with a prefix
+        if message.content.startswith(tuple(await self.bot.get_valid_prefixes())):
+            return
+        # If user is closing
+        if message.content.lower() == "close":
+            await session.close()
+            del self.conversation[str(ctx.author.id)]
+            await ctx.send("Session closed!")
+            return
+        # if all checks pass
+        async with ctx.typing():
+            self.conversation[str(ctx.author.id)]["typing"] = True
+            answer, answered = await self._ask_question(
+                session, message.content, ctx.author.id
             )
-            pass
-        await ctx.send("API key for `travitia` registered.")
+            if answered:
+                message = "{user}, {answer}".format(
+                    user=ctx.author.mention, answer=answer
+                )
+                self.conversation[str(ctx.author.id)]["timer"] = datetime.now()
+                exit = False
+            else:
+                message = answer
+                exit = True
+            await ctx.send(message)
+            self.conversation[str(ctx.author.id)]["typing"] = False
+            if exit:
+                await session.close()

@@ -8,7 +8,7 @@ import async_cleverbot as ac
 from typing import Optional
 
 from redbot.core.bot import Red
-from redbot.core import commands
+from redbot.core import commands, checks
 from redbot.core.utils.chat_formatting import humanize_list
 
 log = logging.getLogger("predeactor.cleverbot")
@@ -25,8 +25,6 @@ class Core(commands.Cog):
         self.conversation = {}
         self._init_logger()
         super().__init__()
-
-    # Cog informations
 
     def _init_logger(self):
         log_format = logging.Formatter(
@@ -45,8 +43,6 @@ class Core(commands.Cog):
             version=self.__version__,
         )
 
-    # Cog functions
-
     async def _get_api_key(self):
         travitia = await self.bot.get_shared_api_tokens("travitia")
         # No need to check if the API key is not registered, the
@@ -55,7 +51,7 @@ class Core(commands.Cog):
 
     async def _make_cleverbot_session(self):
         cleverbot_session = ac.Cleverbot(
-            await self.get_api_key(), context=ac.DictContext()
+            await self._get_api_key(), context=ac.DictContext()
         )
         return cleverbot_session
 
@@ -66,55 +62,45 @@ class Core(commands.Cog):
             answer = await session.ask(
                 question, user_id if user_id is not None else "00"
             )
+            answered = True
         except Exception as e:
             answer = "An error happened: {error}. Please try again later. Session closed.".format(
                 error=str(e)
             )
-            await self._close_cleverbot(session)
-        return answer
+            answered = False
+        return answer, answered
 
-    async def _check_user_in_conversation(self, ctx: commands.Context):
-        try:
-            if ctx.author.id in self.conversation[str(ctx.message.channel.id)]:
-                await ctx.send("A conversation is already running.")
-                return True
-        except KeyError:
-            await self.add_user(ctx.channel.id, ctx.author.id)
-        return False
-
-    def _check_channel_in_conversation(self, ctx: commands.Context, channel_id: int):
-        if str(channel_id) not in self.conversation:
-            return True
-        return False
-
-    async def _add_user(self, channel_id: int, user_id: int):
-        if str(channel_id) not in self.conversation:
-            self.conversation[str(channel_id)] = []
-        self.conversation[str(channel_id)].append(user_id)
-
-    async def _remove_user(self, channel_id: int, user_id: int, session):
-        try:
-            if len(self.conversation[str(channel_id)]) == 1:
-                del self.conversation[str(channel_id)]  # Remove channel ID
-                return
-            self.conversation[str(channel_id)].remove(user_id)  # Only remove user
-        except KeyError:
-            await self.close_cleverbot(session)
-
-    # Close methods
-
-    async def _close_by_timeout(self, ctx: commands.Context, session):
+    def _message_by_timeout(self):
         messages = [
             "5 minutes without messages ? Sorry but I have to close your conversation.",
             "Sorry but after 5 minutes, I close your conversation.",
             "Conversation stopped.",
             "Since I'm lonely, I close our conversation.",
         ]
-        await ctx.send(random.choice(messages))
-        await self.remove_user(ctx.channel.id, ctx.author.id, session)
+        return random.choice(messages)
 
-    async def _close_cleverbot(self, session):
-        await session.close()
+    # Commands for settings
+
+    @checks.is_owner()
+    @commands.command(name="settraviliaapikey")
+    async def travailiaapikey(self, ctx: commands.Context, api_key: str):
+        """Set the API key for Travitia API.
+        
+        To set the API key:
+        1. Go to [this server](https://discord.gg/s4fNByu).
+        2. Go to #playground and use `> api`.
+        3. Say yes and follow instructions.
+        4. When you receive your key, use this command again with your API key.
+        """
+        await ctx.bot.set_shared_api_tokens("travitia", api_key=api_key)
+        try:
+            await ctx.message.delete()
+        except Exception:
+            await ctx.send(
+                "Please delete your message, token is sensitive and should be"
+                " keeped secret."
+            )
+        await ctx.send("API key for `travitia` registered.")
 
     def cog_unload(self):
         if self.conversation:
@@ -132,11 +118,12 @@ def apicheck():
         travitia_keys = await ctx.bot.get_shared_api_tokens("travitia")
         key = travitia_keys.get("api_key") is None
         if ctx.invoked_with == "help" and key:
-            await ctx.send("Missing the API key, some commands won't be available.")
             return False
         if key:
             await ctx.send("The API key is not registered, the command is unavailable.")
-            log.warning("Command has been refused. Missing API key for Travitia.")
+            log.warning(
+                "Command has been refused. Missing API key for Travitia.\nFrom cog CleverBot."
+            )
             return False
         return True
 
