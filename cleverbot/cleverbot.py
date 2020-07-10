@@ -108,11 +108,11 @@ class CleverBot(Core):
                     user=ctx.author.mention, answer=answer
                 )
                 self.conversation[str(ctx.author.id)]["timer"] = datetime.now()
-                exit = False
+                exiting = False
             else:
                 message = answer
-                exit = True
+                exiting = True
             await ctx.send(message)
             self.conversation[str(ctx.author.id)]["typing"] = False
-            if exit:
+            if exiting:
                 await session.close()

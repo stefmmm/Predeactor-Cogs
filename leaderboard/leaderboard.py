@@ -16,7 +16,7 @@ class LeaderBoard(commands.Cog):
     """
 
     __author__ = ["Predeactor"]
-    __version__ = "Beta 0.7"
+    __version__ = "v1.0"
 
     def __init__(self, bot):
         self.bot = bot

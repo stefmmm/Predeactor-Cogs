@@ -18,7 +18,7 @@ log.setLevel(logging.DEBUG)
 class Core(commands.Cog):
 
     __author__ = ["Predeactor"]
-    __version__ = "Beta 0.7"
+    __version__ = "v1.0"
 
     def __init__(self, bot: Red):
         self.bot = bot
