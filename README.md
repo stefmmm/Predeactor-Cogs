@@ -26,7 +26,7 @@ This is a repo made for [Red](https://github.com/Cog-Creators/Red-DiscordBot).
 
 ## Support
 
-Contact me at `Capitaine Predeactor#0495` or find me on the [Red Discord Server](https://discord.gg/red). I will be glad to help you.
+Contact me on Discord at `Capitaine Predeactor#0495`, find me on the [Red Discord Server](https://discord.gg/red) or join my [support server](https://discord.gg/zg6ydua).
 
 If you're having any important(s) issue(s), open an issue or pull request to this repo.
 
