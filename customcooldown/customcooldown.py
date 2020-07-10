@@ -3,7 +3,12 @@ from datetime import datetime
 
 import discord
 
-from redbot.core.utils.chat_formatting import humanize_timedelta
+from redbot.core.utils.chat_formatting import (
+    humanize_timedelta,
+    humanize_list,
+    warning,
+    bold,
+)
 from redbot.core import Config, checks, commands
 from redbot.core.commands.converter import parse_timedelta
 from redbot.core.utils.predicates import MessagePredicate
@@ -12,17 +17,20 @@ from redbot.core.utils.predicates import MessagePredicate
 class CustomCooldown(commands.Cog):
     """Create a customizable cooldown to each channels and category.
 
-    This ooldown moderated by the bot itself.
+    This cooldown is moderated by the bot itself.
     """
 
     __author__ = ["Maaz", "Predeactor"]
-    __version__ = "v1.1"
+    __version__ = "v1.1.2"
 
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=231120028796)
         self.config.register_guild(
-            cooldown_channels={}, cooldown_categories={}, send_dm=False
+            cooldown_channels={},
+            cooldown_categories={},
+            send_dm=False,
+            ignore_bot=True,
         )
         self.date_format = "%d-%m-%Y:%H-%M-%S"
         self.dmed = []
@@ -61,18 +69,19 @@ class CustomCooldown(commands.Cog):
                     deleted = False
                     pass
                 if send_dm:
-                    try:
-                        remaining_time = humanize_timedelta(
-                            seconds=(channel_data["cooldown_time"] - total_seconds)
-                        )
-                        await user.send(
-                            "Sorry, this channel is ratelimited! You'll be able to "
-                            "post again in {channel} in {time}.".format(
-                                channel=channel.mention, time=remaining_time
+                    if not user.bot:
+                        try:
+                            remaining_time = humanize_timedelta(
+                                seconds=(channel_data["cooldown_time"] - total_seconds)
                             )
-                        )
-                    except discord.Forbidden:
-                        pass
+                            await user.send(
+                                "Sorry, this channel is ratelimited! You'll be able to "
+                                "post again in {channel} in {time}.".format(
+                                    channel=channel.mention, time=remaining_time
+                                )
+                            )
+                        except discord.Forbidden:
+                            pass
             else:
                 deleted = None
                 channel_data["users_on_cooldown"][
@@ -113,19 +122,20 @@ class CustomCooldown(commands.Cog):
                     deleted = False
                     pass
                 if send_dm:
-                    try:
-                        s = category_data["cooldown_time"] - total_seconds
-                        remaining_time = humanize_timedelta(seconds=s)
-                        await user.send(
-                            "Hey there, can you chill out for a moment?\n"
-                            "{channel} is ratelimited and you need to wait"
-                            " {time}! Please note that this channel shares a"
-                            " rate limit with the parent channel category.".format(
-                                category=channel.mention, time=remaining_time
+                    if not user.bot:
+                        try:
+                            s = category_data["cooldown_time"] - total_seconds
+                            remaining_time = humanize_timedelta(seconds=s)
+                            await user.send(
+                                "Hey there, can you chill out for a moment?\n"
+                                "{channel} is ratelimited and you need to wait"
+                                " {time}! Please note that this channel shares a"
+                                " rate limit with the parent channel category.".format(
+                                    category=channel.mention, time=remaining_time
+                                )
                             )
-                        )
-                    except discord.Forbidden:
-                        pass
+                        except discord.Forbidden:
+                            pass
             else:
                 deleted = None
                 category_data["users_on_cooldown"][str(user.id)] = now.strftime(
@@ -150,8 +160,18 @@ class CustomCooldown(commands.Cog):
     @commands.is_owner()
     async def reset(self, ctx):
         """Resets all guild data."""
-        await self.config.clear_all_guilds()
-        await ctx.send("Guild data reset.")
+        predicate = MessagePredicate.yes_or_no(ctx)
+        await ctx.send(warning(bold("Are you sure you want to delete ALL guilds?")))
+        try:
+            await self.bot.wait_for("message", check=predicate)
+        except asyncio.TimeoutError:
+            await ctx.tick()
+            return
+        if predicate.result:
+            await self.config.clear_all_guilds()
+            await ctx.send("Guild data reset.")
+        else:
+            await ctx.send("Better to touch nothing...")
 
     @slow.group(name="category")
     async def slowcategory(self, ctx: commands.Context):
@@ -160,6 +180,7 @@ class CustomCooldown(commands.Cog):
 
     @slowcategory.command(name="list")
     async def listcategory(self, ctx: commands.Context):
+        """List cooldowned category."""
         text = ""
         cooldown_categories = await self.config.guild(ctx.guild).cooldown_categories()
         for category_id in cooldown_categories.keys():
@@ -230,8 +251,24 @@ class CustomCooldown(commands.Cog):
         self, ctx: commands.Context, category: discord.CategoryChannel
     ):
         """Delete a category cooldown."""
-        await self._delete_category(ctx, category)
-        await ctx.send("Cooldown removed.")
+        predicate = MessagePredicate.yes_or_no(ctx)
+        await ctx.send(
+            warning(
+                "Are you sure you want to delete {category} data?".format(
+                    category=category.name
+                )
+            )
+        )
+        try:
+            await self.bot.wait_for("message", check=predicate)
+        except asyncio.TimeoutError:
+            await ctx.tick()
+            return
+        if predicate.result:
+            await self._delete_category(ctx, category)
+            await ctx.send("Cooldown removed.")
+        else:
+            await ctx.send("Cooldowned forever...")
 
     @slowcategory.command(name="update")
     async def updatecategory(
@@ -256,6 +293,7 @@ class CustomCooldown(commands.Cog):
 
     @slowchannel.command(name="list")
     async def listchannel(self, ctx: commands.Context):
+        """List cooldowned channels."""
         text = ""
         cooldown_channels = await self.config.guild(ctx.guild).cooldown_channels()
         for channel_id in cooldown_channels.keys():
@@ -324,8 +362,26 @@ class CustomCooldown(commands.Cog):
         self, ctx: commands.Context, *, channel: discord.TextChannel
     ):
         """Delete a channel cooldown."""
-        await self._delete_channel(ctx, channel)
-        await ctx.send("Cooldown removed.")
+        predicate = MessagePredicate.yes_or_no(ctx)
+        await ctx.send(
+            warning(
+                bold(
+                    "Are you sure you want to delete {channel} data?".format(
+                        channel=channel.mention
+                    )
+                )
+            )
+        )
+        try:
+            await self.bot.wait_for("message", check=predicate)
+        except asyncio.TimeoutError:
+            await ctx.tick()
+            return
+        if predicate.result:
+            await self._delete_channel(ctx, channel)
+            await ctx.send("Cooldown removed.")
+        else:
+            await ctx.send("Peace and quiet...")
 
     @commands.group()
     @commands.guild_only()
@@ -350,6 +406,27 @@ class CustomCooldown(commands.Cog):
         else:
             await ctx.send_help()
 
+    @slowset.command()
+    @checks.admin()
+    async def ignorebot(self, ctx: commands.Context, option: bool = None):
+        """
+        Enable/Disable ignoring bots when they send a message in channel
+         or category that own a cooldown.
+
+        You must use `True` or `False`.
+        """
+        if option is not None:
+            await self.config.guild(ctx.guild).ignore_bot.set(option)
+            if option:
+                await ctx.send(
+                    "I will now ignore bot when they send a message in "
+                    "cooldowned channels/category."
+                )
+            else:
+                await ctx.send("I won't ignore bots anymore.")
+        else:
+            await ctx.send_help()
+
     @commands.group()
     @checks.mod()
     async def bypass(self, ctx):
@@ -363,7 +440,20 @@ class CustomCooldown(commands.Cog):
         """Resets the cooldown for a user in a channel."""
         cooldown_channels = await self.config.guild(ctx.guild).cooldown_channels()
         if str(channel.id) not in cooldown_channels:
-            return await ctx.send(f"{channel.mention} is not on cooldown.")
+            await ctx.send(
+                "{channel} is not on cooldown.".format(channel=channel.mention)
+            )
+            return
+        if (
+            str(member.id)
+            not in cooldown_channels[str(channel.id)]["users_on_cooldown"]
+        ):
+            await ctx.send(
+                "{user} is not in cooldown in {channel}.".format(
+                    user=member, channel=channel.mention
+                )
+            )
+            return
         del cooldown_channels[str(channel.id)]["users_on_cooldown"][str(member.id)]
         await self.config.guild(ctx.guild).cooldown_channels.set(cooldown_channels)
         await ctx.send(f"{member}'s cooldown in {channel.mention} has been reset.")
@@ -375,17 +465,35 @@ class CustomCooldown(commands.Cog):
         """Resets the cooldown for a user in a category."""
         cooldown_categories = await self.config.guild(ctx.guild).cooldown_categories()
         if str(category.id) not in cooldown_categories:
-            return await ctx.send(f"{category.name} category is not on cooldown.")
+            await ctx.send(
+                "{category} category is not on cooldown.".format(category=category.name)
+            )
+            return
+        if (
+            str(member.id)
+            not in cooldown_categories[str(category.id)]["users_on_cooldown"]
+        ):
+            await ctx.send(
+                "{user} is not in cooldown in {category}.".format(
+                    user=member, category=category.name
+                )
+            )
+            return
         del cooldown_categories[str(category.id)]["users_on_cooldown"][str(member.id)]
         await self.config.guild(ctx.guild).cooldown_categories.set(cooldown_categories)
-        await ctx.send(f"{member}'s cooldown in **{category.name}** has been reset.")
+        await ctx.send(
+            "{member}'s cooldown in {category} has been reset.".format(
+                member=member.name, category=category.name
+            )
+        )
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         if not message.guild:
             return
-        if message.author.bot:
-            return
+        if await self.config.guild(message.guild).ignore_bot():
+            if message.author.bot:
+                return
         cooldown_channels = await self.config.guild(message.guild).cooldown_channels()
         cooldown_categories = await self.config.guild(
             message.guild
