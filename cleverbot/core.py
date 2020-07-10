@@ -83,7 +83,7 @@ class Core(commands.Cog):
 
     @checks.is_owner()
     @commands.command(name="settraviliaapikey")
-    async def travailiaapikey(self, ctx: commands.Context, api_key: str):
+    async def travaitiaapikey(self, ctx: commands.Context, api_key: str):
         """Set the API key for Travitia API.
         
         To set the API key:

@@ -4,7 +4,7 @@
     ],
     "description": "A free cog for talking to Cleverbot!",
     "short": "Talk to Cleverbot in Discord.",
-    "install_msg": "Hello! Thank for adding my CleverBot cog! Please note that this cog is in beta and may contain bugs or undesired behavior. If so, **PLEASE** open an issue on my repo (https://github.com/Predeactor/Predeactor-Cogs) and say what's wrong.",
+    "install_msg": "Hello! Thank for adding my CleverBot cog! To start using this cog, use `[p]settravitiaapikey`.",
     "requirements": [
         "async_cleverbot"
     ]

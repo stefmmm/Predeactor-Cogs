@@ -15,7 +15,7 @@ This is a repo made for [Red](https://github.com/Cog-Creators/Red-DiscordBot).
 | Cog Name       | Description                                           | Version    |
 | -------------- | ----------------------------------------------------- | ---------- |
 | Coronavirus    | Get stats about the Coronavirus.                      | Finished   |
-| CleverBot      | Talk or ask a question to CleverBot.                  | v1.0       |
+| CleverBot      | Talk or ask a question to CleverBot for free.         | v1.0       |
 | LeaderBoard    | Global reputation system using points.                | v1.0       |
 | CustomCooldown | Custom slowmode/cooldown moderated by the bot itself. | v1.1.2     |
 
