@@ -68,13 +68,13 @@ class CleverBot(Core):
         Else code is exited.
         """
         ctx = await self.bot.get_context(message)
-        session = self.conversation[str(ctx.author.id)]["session"]
-        timer = self.conversation[str(ctx.author.id)]["timer"]
-        channel = self.conversation[str(ctx.author.id)]["channel"]
 
         # If user is not using conversation
         if str(ctx.author.id) not in self.conversation:
             return
+        session = self.conversation[str(ctx.author.id)]["session"]
+        timer = self.conversation[str(ctx.author.id)]["timer"]
+        channel = self.conversation[str(ctx.author.id)]["channel"]
         # If the timer is exceded.
         if (datetime.now() - timer).seconds > 300:
             channel = self.bot.get_channel(channel)
