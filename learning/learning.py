@@ -1,9 +1,10 @@
-import discord
-
 import asyncio
 
-from redbot.core import commands, Config
+import discord
+
+from redbot.core import Config, commands
 from redbot.core.utils.chat_formatting import humanize_list
+
 from .lessons import *
 
 

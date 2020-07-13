@@ -1,8 +1,7 @@
 import discord
 
-from redbot.core import commands
-
 import aiohttp
+from redbot.core import commands
 
 
 class Coronavirus(commands.Cog):

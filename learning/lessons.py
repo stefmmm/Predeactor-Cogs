@@ -6,8 +6,8 @@
 
 import discord
 
-from redbot.core.bot import Red
 from redbot.core import commands
+from redbot.core.bot import Red
 
 
 def pintro():

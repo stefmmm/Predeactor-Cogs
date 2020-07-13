@@ -1,14 +1,13 @@
-import discord
-import logging
 import asyncio
+import logging
 import random
-
-import async_cleverbot as ac
-
 from typing import Optional
 
+import discord
+
+import async_cleverbot as ac
+from redbot.core import checks, commands
 from redbot.core.bot import Red
-from redbot.core import commands, checks
 from redbot.core.utils.chat_formatting import humanize_list
 
 log = logging.getLogger("predeactor.cleverbot")

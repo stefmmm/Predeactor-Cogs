@@ -3,15 +3,11 @@ from datetime import datetime
 
 import discord
 
-from redbot.core.utils.chat_formatting import (
-    humanize_timedelta,
-    humanize_list,
-    warning,
-    pagify,
-    bold,
-)
 from redbot.core import Config, checks, commands
 from redbot.core.commands.converter import parse_timedelta
+from redbot.core.utils.chat_formatting import (bold, humanize_list,
+                                               humanize_timedelta, pagify,
+                                               warning)
 from redbot.core.utils.predicates import MessagePredicate
 
 
