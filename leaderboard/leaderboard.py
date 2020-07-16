@@ -89,6 +89,9 @@ class LeaderBoard(commands.Cog):
     @commands.command()
     @commands.cooldown(1, 10, commands.BucketType.channel)
     async def repboard(self, ctx, page_list: int = 1):
+        """Show the reputation leaderboard.
+        Give a number to show a page.
+        """
         users = []
         title = "Global Rep Leaderboard for {}\n".format(self.bot.user.name)
         all_users = await self.data.all_users()
