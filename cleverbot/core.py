@@ -9,6 +9,7 @@ from redbot.core import checks, commands
 from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list
 
+
 class Core(commands.Cog):
 
     __author__ = ["Predeactor"]
