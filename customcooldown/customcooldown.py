@@ -544,7 +544,7 @@ class CustomCooldown(commands.Cog):
 
     # Slowset: Ignore Roles
 
-    @slowset.group(name="ignoreroles"aliases=["ignorerole", "ir"])
+    @slowset.group(name="ignoreroles", aliases=["ignorerole", "ir"])
     @checks.admin()
     async def slowignoreroles(self, ctx: commands.GuildContext):
         """Add or remove roles from the ignored list of cooldown."""

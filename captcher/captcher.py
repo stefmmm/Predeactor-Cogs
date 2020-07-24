@@ -10,7 +10,7 @@ from .core import Core
 class Captcher(Core):
     @commands.group(name="setcaptcher")
     @commands.guild_only()
-    @checks.admin()
+    @checks.admin_or_permissions(manage_roles=True)
     async def config(self, ctx: commands.GuildContext):
         """
         Configure settings for Captcher.
@@ -18,7 +18,6 @@ class Captcher(Core):
         pass
 
     @config.command()
-    @checks.admin_or_permissions(manage_roles=True)
     async def giverole(self, ctx: commands.Context, role_to_give: discord.Role = None):
         """
         Give a role when the user succesfully completed the captacha.
@@ -37,7 +36,6 @@ class Captcher(Core):
         await ctx.send(message)
 
     @config.command()
-    @checks.admin_or_permissions(manage_channels=True)
     async def channel(
         self, ctx: commands.Context, channel_to_send_captcha: discord.TextChannel = None
     ):
@@ -61,7 +59,6 @@ class Captcher(Core):
         await ctx.send(message)
 
     @config.command()
-    @checks.admin_or_permissions(manage_channels=True)
     async def activate(self, ctx: commands.Context, true_or_false: bool = None):
         """
         Set if Captcher is activated.
