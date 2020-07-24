@@ -1,5 +1,4 @@
 import asyncio
-import logging
 import random
 from typing import Optional
 
@@ -10,10 +9,6 @@ from redbot.core import checks, commands
 from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list
 
-log = logging.getLogger("predeactor.cleverbot")
-log.setLevel(logging.DEBUG)
-
-
 class Core(commands.Cog):
 
     __author__ = ["Predeactor"]
@@ -22,16 +17,7 @@ class Core(commands.Cog):
     def __init__(self, bot: Red):
         self.bot = bot
         self.conversation = {}
-        self._init_logger()
         super().__init__()
-
-    def _init_logger(self):
-        log_format = logging.Formatter(
-            f"%(asctime)s %(levelname)s {self.__class__.__name__}: %(message)s",
-            datefmt="[%d/%m/%Y %H:%M]",
-        )
-        stdout = logging.StreamHandler()
-        stdout.setFormatter(log_format)
 
     def format_help_for_context(self, ctx: commands.Context) -> str:
         """Thanks Sinbad!"""
@@ -120,9 +106,6 @@ def apicheck():
             return False
         if key:
             await ctx.send("The API key is not registered, the command is unavailable.")
-            log.warning(
-                "Command has been refused. Missing API key for Travitia.\nFrom cog CleverBot."
-            )
             return False
         return True
 

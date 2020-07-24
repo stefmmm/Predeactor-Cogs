@@ -21,9 +21,10 @@ This is a repo made for [Red](https://github.com/Cog-Creators/Red-DiscordBot).
 
 ## Hidden cogs
 
-| Cog Name     | Description                                          | Version    | Reason      |
-| ------------ | ---------------------------------------------------- | ---------- | ----------- |
-| Learning     | Receive some tutorials about Python.                 | EoL        | End of life |
+| Cog Name     | Description                                          | Version    | Reason       |
+| ------------ | ---------------------------------------------------- | ---------- | ------------ |
+| Learning     | Receive some tutorials about Python.                 | EoL        | End of life  |
+| Captcher     | Captcha cog.                                         | Alpha 0.1  | Being worked |
 
 ## Support
 
