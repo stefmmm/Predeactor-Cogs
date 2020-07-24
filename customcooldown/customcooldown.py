@@ -49,7 +49,7 @@ class CustomCooldown(commands.Cog):
 
     # Hadling Functions
 
-    async def handle_channel_cooldown(self, message, cooldown_channels, send_dm):
+    async def _handle_channel_cooldown(self, message, cooldown_channels, send_dm):
         now = datetime.now()
         channel = message.channel
         user = message.author
@@ -256,7 +256,7 @@ class CustomCooldown(commands.Cog):
             )
         )
 
-    @slowcategory.command(name="delete", aliases=["remove"])
+    @slowcategory.command(name="delete", aliases=["remove", "del"])
     async def deletecategory(
         self, ctx: commands.Context, category: discord.CategoryChannel
     ):
@@ -375,7 +375,7 @@ class CustomCooldown(commands.Cog):
             )
         )
 
-    @slowchannel.command(name="delete", aliases=["remove"])
+    @slowchannel.command(name="delete", aliases=["remove", "del"])
     async def deletechannel(
         self, ctx: commands.Context, *, channel: discord.TextChannel
     ):
@@ -452,7 +452,7 @@ class CustomCooldown(commands.Cog):
 
     # Slowset: Ignore Users
 
-    @slowset.group(name="ignoreusers")
+    @slowset.group(name="ignoreusers", aliases=["ignoreuser", "iu"])
     @checks.admin()
     async def slowignoreusers(self, ctx: commands.GuildContext):
         """Add or remove users from the ignored list of cooldown."""
@@ -515,7 +515,7 @@ class CustomCooldown(commands.Cog):
                 await ctx.send(line)
         await ctx.tick()
 
-    @slowignoreusers.command(name="delete", aliases=["remove"])
+    @slowignoreusers.command(name="delete", aliases=["remove", "del"])
     async def removeignoreusers(self, ctx: commands.Context, *users: discord.Member):
         """Remove one or multiples users on the ignored list."""
         if not users:
@@ -544,7 +544,7 @@ class CustomCooldown(commands.Cog):
 
     # Slowset: Ignore Roles
 
-    @slowset.group(name="ignoreroles")
+    @slowset.group(name="ignoreroles"aliases=["ignorerole", "ir"])
     @checks.admin()
     async def slowignoreroles(self, ctx: commands.GuildContext):
         """Add or remove roles from the ignored list of cooldown."""
@@ -595,7 +595,7 @@ class CustomCooldown(commands.Cog):
                 await ctx.send(line)
         await ctx.tick()
 
-    @slowignoreroles.command(name="delete", aliases=["remove"])
+    @slowignoreroles.command(name="delete", aliases=["remove", "del"])
     async def removeignoreroles(self, ctx: commands.Context, *roles: discord.Role):
         """Remove one or multiples roles on the ignored list."""
         if not roles:
@@ -720,11 +720,11 @@ class CustomCooldown(commands.Cog):
 
         send_dm = await self.config.guild(message.guild).send_dm()
         if str(channel.id) in cooldown_channels:
-            await self.handle_channel_cooldown(
+            await self._handle_channel_cooldown(
                 message, cooldown_channels, send_dm=send_dm
             )
         if channel.category and str(channel.id) in catgories_channels:
-            await self.handle_category_cooldown(
+            await self._handle_category_cooldown(
                 message, cooldown_categories, send_dm=send_dm
             )
 
