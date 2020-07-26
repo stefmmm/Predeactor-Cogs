@@ -7,6 +7,5 @@
     "install_msg": "Hello, this cog is in alpha state, this mean you can encounter bugs ***AND I'M NOT JOKING, THIS COG IS CLEARLY UNSTABLE!***\nLot of things are missing, **I suggest you to unload this cog**, but work. You may receive undesired exceptions in your logs.",
     "requirements": [
         "captcha"
-    ],
-    "hidden": true
+    ]
 }

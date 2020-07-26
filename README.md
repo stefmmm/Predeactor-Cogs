@@ -24,7 +24,7 @@ This is a repo made for [Red](https://github.com/Cog-Creators/Red-DiscordBot).
 | Cog Name     | Description                                          | Version    | Reason       |
 | ------------ | ---------------------------------------------------- | ---------- | ------------ |
 | Learning     | Receive some tutorials about Python.                 | EoL        | End of life  |
-| Captcher     | Captcha cog.                                         | Alpha 0.1  | Being worked |
+| Captcher     | Captcha cog.                                         | Alpha 0.2  | Being worked |
 
 ## Support
 
