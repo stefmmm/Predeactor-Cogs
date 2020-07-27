@@ -18,7 +18,7 @@ class CleverBot(Core):
     @apicheck()
     @commands.command()
     @commands.cooldown(1, 3, commands.BucketType.user)
-    async def ask(self, ctx: commands.Context, question: str):
+    async def ask(self, ctx: commands.Context, *, question: str):
         """Ask an unique question to Cleverbot.
         
         You won't have a discussion with Cleverbot, you're just 

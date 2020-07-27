@@ -13,7 +13,7 @@ from redbot.core.utils.chat_formatting import humanize_list
 class Core(commands.Cog):
 
     __author__ = ["Predeactor"]
-    __version__ = "v1.0"
+    __version__ = "v1.0.2"
 
     def __init__(self, bot: Red):
         self.bot = bot
@@ -44,6 +44,8 @@ class Core(commands.Cog):
     async def _ask_question(
         self, session, question: str, user_id: Optional[int] = None
     ):
+        if 3 < len(question) < 60:
+            return "Text must be more than 3 characters and shorter than 60.", False
         try:
             answer = await session.ask(
                 question, user_id if user_id is not None else "00"
