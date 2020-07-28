@@ -22,7 +22,7 @@ class CustomCooldown(commands.Cog):
     """
 
     __author__ = ["Maaz", "Predeactor"]
-    __version__ = "v1.2"
+    __version__ = "v1.2.1"
 
     def __init__(self, bot):
         self.bot = bot
@@ -100,7 +100,7 @@ class CustomCooldown(commands.Cog):
             if deleted is False:
                 await self._dm_owner(message.guild.owner, channel)
 
-    async def handle_category_cooldown(self, message, cooldown_categories, send_dm):
+    async def _handle_category_cooldown(self, message, cooldown_categories, send_dm):
         now = datetime.now()
         channel = message.channel
         user = message.author
@@ -788,14 +788,14 @@ class CustomCooldown(commands.Cog):
                 return
 
     async def _return_time(self, ctx: commands.Context, time):
-        cooldown_time = int(parse_timedelta(time).total_seconds())
+        cooldown_time = int(parse_timedelta(time))
         if cooldown_time is None:
             await ctx.send("Please enter a valid time.")
             return
         if cooldown_time == 0:
             await ctx.send("0 cannot be used as a cooldown time.")
             return
-        return cooldown_time
+        return cooldown_time.total_seconds()
 
     async def _get_user(self, user_id: int):
         user = self.bot.get_user(user_id)
