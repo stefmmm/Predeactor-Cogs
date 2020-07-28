@@ -1,9 +1,11 @@
+import asyncio
 import logging
 import sys
 
 import discord
 from redbot.core import checks, commands
-from redbot.core.utils.chat_formatting import box
+from redbot.core.utils.chat_formatting import bold, box
+from redbot.core.utils.predicates import MessagePredicate
 
 from .core import Core
 
@@ -21,7 +23,6 @@ class Captcher(Core):
         pass
 
     @config.command()
-    @commands.bot_has_permissions(manage_roles=True)
     async def giverole(self, ctx: commands.Context, role_to_give: discord.Role = None):
         """
         Give a role when the user succesfully completed the captacha.
@@ -47,21 +48,15 @@ class Captcher(Core):
         Set where the captcha must be sent.
         """
         if channel:
-            if not channel.permissions_for(ctx.guild.me).read_messages:
-                message = (
-                    "I require the Read Messages permission in this channel to work."
-                )
-            elif not channel.permissions_for(ctx.guild.me).manage_messages:
-                message = (
-                    "I require the Manage Messages permission in this channel "
-                    "to work properly."
-                )
-            else:
+            result, answer = await self._permissions_checker(channel)
+            if result:
                 await self.data.guild(ctx.guild).verification_channel.set(channel.id)
                 message = (
                     "{channel.name} will be used when members must pass the "
                     "captcha.".format(channel=channel)
                 )
+            else:
+                message = answer
         elif (
             channel is None and await self.data.guild(ctx.guild).verification_channel()
         ):
@@ -76,14 +71,17 @@ class Captcher(Core):
     async def logschannel(
         self, ctx: commands.Context, channel: discord.TextChannel = None
     ):
+        """Set the log channel, really recommended for knowing who passed verification
+         or who failed."""
         if channel:
-            if not channel.permissions_for(ctx.guild.me).read_messages:
-                message = "I need to read into this channel."
-            else:
+            result, answer = await self._permissions_checker(channel)
+            if result:
                 await self.data.guild(ctx.guild).logs_channel.set(channel.id)
                 message = "{channel.name} will be used for captcha logs.".format(
                     channel=channel
                 )
+            else:
+                message = answer
         elif channel is None and await self.data.guild(ctx.guild).logs_channel():
             await self.data.guild(ctx.guild).logs_channel.clear()
             message = "Logging channel configuration removed."
@@ -98,23 +96,27 @@ class Captcher(Core):
         Set if Captcher is activated.
         """
         if true_or_false is not None:
-            channel = await self.data.guild(ctx.guild).verification_channel()
-            fetched_channel = self.bot.get_channel(channel)
-            if channel:
-                if not fetched_channel.permissions_for(ctx.guild.me).send_messages:
-                    message = (
-                        "I cannot talk in the configured channel ({name}), which is "
-                        "required for sending captcha.".format(
-                            name=fetched_channel.name
+            channel_id = await self.data.guild(ctx.guild).verification_channel()
+            fetched_channel = self.bot.get_channel(channel_id)
+            temp_role = await self.data.guild(ctx.guild).temp_role()
+            if fetched_channel:
+                result, answer = await self._permissions_checker(fetched_channel)
+                if result:
+                    if temp_role:
+                        await self.data.guild(ctx.guild).active.set(true_or_false)
+                        message = "Captcher is now {term}activate.".format(
+                            term="" if true_or_false else "de"
                         )
-                    )
+                    else:
+                        message = (
+                            "Cannot complete request: No temporary role are configured."
+                        )
                 else:
-                    await self.data.guild(ctx.guild).active.set(true_or_false)
-                    message = "Captcher is now {term}activate.".format(
-                        term="" if true_or_false else "de"
-                    )
+                    message = answer
             else:
-                message = "You cannot activate Captcher if no channel are configured."
+                message = "Cannot complete request: No channel are configured."
+                if channel_id:
+                    await self.data.guild(ctx.guild).verification_channel.clear()
         else:
             await ctx.send_help()
             activated = await self.data.guild(ctx.guild).active()
@@ -122,6 +124,43 @@ class Captcher(Core):
                 "Captcher is {term}activated.".format(term="" if activated else "de")
             )
         await ctx.send(message)
+
+    @config.command()
+    async def autoconfig(self, ctx: commands.Context):
+        """Automatically set Captcher."""
+        await ctx.send(
+            "This command will:\n"
+            "- Create a new role called: Unverified\n"
+            "- Create a new channel called: #verification\n"
+            "- Create a new channel called: #verification-logs\n"
+            "\nBot will overwrite all channels to:\n"
+            "- Unallow Unverified to read in channels.\n"
+            "- Unverified will be able to read & send message in #verification.\n"
+            "\nDo you wish to continue?"
+        )
+        try:
+            predicator = MessagePredicate.yes_or_no(ctx)
+            await self.bot.wait_for("message", timeout=30, check=predicator)
+        except asyncio.TimeoutError:
+            await ctx.send("Command cancelled, caused by timeout.")
+        if predicator.result:
+            if not ctx.channel.permissions_for(ctx.guild.me).administrator:
+                await ctx.send("I require the Adminstrator permission first.")
+                return
+            await self.data.guild(ctx.guild).clear()
+            await self._overwrite_channel(ctx)
+        else:
+            await ctx.send("You will have to configure Captcher yourself.")
+        await self._ask_for_role_add(ctx)
+        await ctx.send("Configuration is done. Activate Captcher? (y/n)")
+        try:
+            predicator = MessagePredicate.yes_or_no(ctx)
+            await self.bot.wait_for("message", timeout=30, check=predicator)
+        except asyncio.TimeoutError:
+            await ctx.send("Question cancelled, caused by timeout.")
+        if predicator.result:
+            await self.data.guild(ctx.guild).active.set(True)
+        await ctx.send("Done.")
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
@@ -149,12 +188,50 @@ class Captcher(Core):
 
     @commands.command()
     @checks.is_owner()
-    async def test(self, ctx: commands.Context):
+    async def challengeuser(self, ctx: commands.Context, *, user: discord.Member):
+        """Make an user pass the captcha again."""
+        if user.bot:
+            await ctx.send(
+                "Bots are my friend, I cannot let you do that to them, it's too"
+                " complex."
+            )
+            return
+        roles_methods = {"1": "all", "2": "configured", "3": None}
+        await ctx.send(
+            "Choose the following numnber:\n"
+            "1: Remove all roles and re-add them after verification.\n"
+            "2: Only remove configured role and re-add after verification.\n"
+            "3: Do not remove roles. (Channel must be visible)"
+        )
+        try:
+            user_message = await self.bot.wait_for(
+                "message", timeout=30, check=MessagePredicate.same_context(ctx)
+            )
+        except asyncio.TimeoutError:
+            await ctx.send("Command cancelled, caused by timeout.")
+        if user_message.content not in roles_methods:
+            await ctx.send("This method is not available. Aborting.")
+            return
+        else:
+            method = roles_methods[user_message.content]
+        if method == "all":
+            roles = await self._role_keeper(user)
+            await self._roles_remover(user)
+        elif method == "configured":
+            await user.remove_roles(
+                ctx.guild.get_role(await self.data.guild(ctx.author.guild).giverole())
+            )
         verification_channel = await self.data.guild(
             ctx.author.guild
         ).verification_channel()
-        await self._challenge(
-            ctx.author,
-            self.bot.get_channel(verification_channel),
-            f"{ctx.prefix}test ran.",
+        channel = self.bot.get_channel(verification_channel)
+        if not channel:
+            await ctx.send(
+                "I cannot find the verification channel, please readd one again."
+            )
+            return
+        captched = await self._challenge(
+            user, channel, f"{user} challenged manually by {ctx.author}.",
         )
+        if method == "all" and captched:
+            await self._add_role(user, roles)
