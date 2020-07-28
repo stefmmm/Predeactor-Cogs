@@ -22,7 +22,7 @@ class CustomCooldown(commands.Cog):
     """
 
     __author__ = ["Maaz", "Predeactor"]
-    __version__ = "v1.2.1"
+    __version__ = "v1.2.1.1"
 
     def __init__(self, bot):
         self.bot = bot
@@ -788,14 +788,14 @@ class CustomCooldown(commands.Cog):
                 return
 
     async def _return_time(self, ctx: commands.Context, time):
-        cooldown_time = int(parse_timedelta(time))
-        if cooldown_time is None:
+        cooldown_time = parse_timedelta(time)
+        if int(cooldown_time) is None:
             await ctx.send("Please enter a valid time.")
             return
-        if cooldown_time == 0:
+        if int(cooldown_time) == 0:
             await ctx.send("0 cannot be used as a cooldown time.")
             return
-        return cooldown_time.total_seconds()
+        return int(cooldown_time.total_seconds())
 
     async def _get_user(self, user_id: int):
         user = self.bot.get_user(user_id)
