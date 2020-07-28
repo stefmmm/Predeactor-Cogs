@@ -22,7 +22,7 @@ class CustomCooldown(commands.Cog):
     """
 
     __author__ = ["Maaz", "Predeactor"]
-    __version__ = "v1.2.1.1"
+    __version__ = "v1.2.2"
 
     def __init__(self, bot):
         self.bot = bot
@@ -159,16 +159,18 @@ class CustomCooldown(commands.Cog):
     @commands.group()
     @commands.guild_only()
     @checks.admin()
-    async def slow(self, ctx: commands.Context):
+    async def slow(self, ctx: commands.GuildContext):
         """Configure categories and channel."""
         pass
 
     @slow.command()
     @commands.is_owner()
-    async def reset(self, ctx):
+    async def reset(self, ctx: commands.Context):
         """Resets all guild data."""
         predicate = MessagePredicate.yes_or_no(ctx)
-        await ctx.send(warning(bold("Are you sure you want to delete ALL guilds?")))
+        await ctx.send(
+            warning(bold("Are you sure you want to delete ALL guilds?") + " (y/n)")
+        )
         try:
             await self.bot.wait_for("message", check=predicate)
         except asyncio.TimeoutError:
@@ -210,7 +212,7 @@ class CustomCooldown(commands.Cog):
 
     @slowcategory.command(name="add")
     async def addcategory(
-        self, ctx: commands.Context, category: discord.CategoryChannel, time: str
+        self, ctx: commands.Context, category: discord.CategoryChannel, *, time: str
     ):
         """Add a category cooldown."""
         cooldown_categories = await self.config.guild(ctx.guild).cooldown_categories()
@@ -218,21 +220,24 @@ class CustomCooldown(commands.Cog):
             await ctx.send(
                 "This category is already added to the cooldown. If you want to edit"
                 " the cooldown time, use `{prefix}slow channel edit`.".format(
-                    prefix=ctx.prefix
+                    prefix=ctx.clean_prefix
                 )
             )
             return
 
-        cooldown_time = await self._return_time(ctx, time)
-        await self._update_category_data(ctx, category, cooldown_time)
-        await ctx.send(
-            "Done! Every {category}'s channels are now set at 1 message every "
-            "{time}. Channels from this category are moderated but new channel "
-            "won't be moderated. If you add channels that you want to also add cooldown"
-            ", use `{prefix}slow category update`".format(
-                category=category.name, time=time, prefix=ctx.prefix
+        time = await self._return_time(ctx, time)
+        if time:
+            await self._update_category_data(ctx, category, time)
+            await ctx.send(
+                "Done! Every {category}'s channels are now set at 1 message every "
+                "{time} seconds. Channels from this category are moderated but new channel "
+                "won't be moderated. If you add channels that you want to also add cooldown"
+                ", use `{prefix}slow category update`".format(
+                    category=category.name, time=time, prefix=ctx.clean_prefix
+                )
             )
-        )
+        else:
+            await ctx.send("Your time is not correct to me.")
 
     @slowcategory.command(name="edit")
     async def editcategory(
@@ -240,25 +245,25 @@ class CustomCooldown(commands.Cog):
     ):
         """Edit a category cooldown."""
         cooldown_categories = await self.config.guild(ctx.guild).cooldown_categories()
-        if str(category.id) in cooldown_categories:
-            cooldown_time = await self._return_time(ctx, time)
-            if cooldown_time is None:
-                return
-        else:
+        if str(category.id) not in cooldown_categories:
             await ctx.send(
                 "{category} does not have cooldown.".format(channel=category.name)
             )
             return
-        await self._update_category_data(ctx, category, cooldown_time)
-        await ctx.send(
-            "{category} is now set at 1 message every {time}".format(
-                category=category.name, time=time
+        time = await self._return_time(ctx, time)
+        if time:
+            await self._update_category_data(ctx, category, time)
+            await ctx.send(
+                "{category} is now set at 1 message every {time} seconds.".format(
+                    category=category.name, time=time
+                )
             )
-        )
+        else:
+            await ctx.send("Your time is not correct to me.")
 
     @slowcategory.command(name="delete", aliases=["remove", "del"])
     async def deletecategory(
-        self, ctx: commands.Context, category: discord.CategoryChannel
+        self, ctx: commands.Context, *, category: discord.CategoryChannel
     ):
         """Delete a category cooldown."""
         predicate = MessagePredicate.yes_or_no(ctx)
@@ -279,22 +284,20 @@ class CustomCooldown(commands.Cog):
             return
         if predicate.result:
             d = await self._delete_category(ctx, category)
-            if d is None:
-                return
-            await ctx.send("Cooldown removed.")
+            await ctx.tick()
         else:
             await ctx.send("Cooldowned, forever...")
 
     @slowcategory.command(name="update")
     async def updatecategory(
-        self, ctx: commands.Context, category: discord.CategoryChannel
+        self, ctx: commands.Context, *, category: discord.CategoryChannel
     ):
         """Update configuration to sync with new and old channel(s) into the category."""
         data = await self.config.guild(ctx.guild).cooldown_categories()
         if str(category.id) not in data:
             await ctx.send(
                 "This category is not registered into cooldowned categories.\n"
-                "Use `{prefix}slow category add` first.".format(prefix=ctx.prefix)
+                "Use `{prefix}slow category add` first.".format(prefix=ctx.clean_prefix)
             )
             return
         time = data[str(category.id)]["cooldown_time"]
@@ -339,20 +342,21 @@ class CustomCooldown(commands.Cog):
             await ctx.send(
                 "This channel is already added to the cooldown. If you want to edit"
                 " the cooldown time, use `{prefix}slow channel edit`.".format(
-                    prefix=ctx.prefix
+                    prefix=ctx.clean_prefix
                 )
             )
             return
 
-        cooldown_time = await self._return_time(ctx, time)
-        if cooldown_time is None:
-            return
-        await self._update_channel_data(ctx, channel, cooldown_time)
-        await ctx.send(
-            "{channel} is now set at 1 message every {time}.".format(
-                channel=channel.mention, time=time
+        time = await self._return_time(ctx, time)
+        if time:
+            await self._update_channel_data(ctx, channel, time)
+            await ctx.send(
+                "{channel} is now set at 1 message every {time} seconds.".format(
+                    channel=channel.mention, time=time
+                )
             )
-        )
+        else:
+            await ctx.send("Your time is not correct to me.")
 
     @slowchannel.command(name="edit")
     async def editchannel(
@@ -361,19 +365,21 @@ class CustomCooldown(commands.Cog):
         """Edit a channel cooldown."""
         cooldown_channels = await self.config.guild(ctx.guild).cooldown_channels()
         if str(channel.id) in cooldown_channels:
-            cooldown_time = await self._return_time(ctx, time)
+            time = await self._return_time(ctx, time)
         else:
             await ctx.send(
                 "{channel} does not have cooldown.".format(channel=channel.mention)
             )
             return
-
-        await self._update_channel_data(ctx, channel, cooldown_time)
-        await ctx.send(
-            "{channel} is now set at 1 message every {time}".format(
-                channel=channel.mention, time=time
+        if time:
+            await self._update_channel_data(ctx, channel, time)
+            await ctx.send(
+                "{channel} is now set at 1 message every {time} seconds.".format(
+                    channel=channel.mention, time=time
+                )
             )
-        )
+        else:
+            await ctx.send("Your time is not correct to me.")
 
     @slowchannel.command(name="delete", aliases=["remove", "del"])
     async def deletechannel(
@@ -398,9 +404,7 @@ class CustomCooldown(commands.Cog):
             return
         if predicate.result:
             d = await self._delete_channel(ctx, channel)
-            if d is None:
-                return
-            await ctx.send("Cooldown removed.")
+            await ctx.tick()
         else:
             await ctx.send("Peace and quiet...")
 
@@ -408,7 +412,7 @@ class CustomCooldown(commands.Cog):
 
     @commands.group()
     @commands.guild_only()
-    async def slowset(self, ctx):
+    async def slowset(self, ctx: commands.GuildContext):
         """Set differents options."""
         pass
 
@@ -789,12 +793,8 @@ class CustomCooldown(commands.Cog):
 
     async def _return_time(self, ctx: commands.Context, time):
         cooldown_time = parse_timedelta(time)
-        if int(cooldown_time) is None:
-            await ctx.send("Please enter a valid time.")
-            return
-        if int(cooldown_time) == 0:
-            await ctx.send("0 cannot be used as a cooldown time.")
-            return
+        if cooldown_time is None:
+            return None
         return int(cooldown_time.total_seconds())
 
     async def _get_user(self, user_id: int):
