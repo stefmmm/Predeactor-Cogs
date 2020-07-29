@@ -18,8 +18,10 @@ assignees: ''
 
 ### Versions and infos:
  - Red Version:
- - Host OS: 
  - Discord.py Version: 
 
+## Logs/Traceback:
+<!---You should have receive a traceback with your error, remove this section if not. -->
+
 ## Others:
-<!--- If you believe there's more to explain, describe it here. -->
+<!-- If you need to give any other informations -->
