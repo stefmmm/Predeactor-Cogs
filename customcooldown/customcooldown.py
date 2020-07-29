@@ -22,7 +22,7 @@ class CustomCooldown(commands.Cog):
     """
 
     __author__ = ["Maaz", "Predeactor"]
-    __version__ = "v1.2.2"
+    __version__ = "v1.2.2.1"
 
     def __init__(self, bot):
         self.bot = bot
@@ -133,7 +133,7 @@ class CustomCooldown(commands.Cog):
                             remaining_time = humanize_timedelta(seconds=s)
                             await user.send(
                                 "Hey there, can you chill out for a moment?\n"
-                                "{channel} is ratelimited and you need to wait"
+                                "{category} is ratelimited and you need to wait"
                                 " {time}! Please note that this channel shares a"
                                 " rate limit with the parent channel category.".format(
                                     category=channel.mention, time=remaining_time
@@ -224,7 +224,6 @@ class CustomCooldown(commands.Cog):
                 )
             )
             return
-
         time = await self._return_time(ctx, time)
         if time:
             await self._update_category_data(ctx, category, time)
@@ -346,7 +345,6 @@ class CustomCooldown(commands.Cog):
                 )
             )
             return
-
         time = await self._return_time(ctx, time)
         if time:
             await self._update_channel_data(ctx, channel, time)
@@ -486,7 +484,6 @@ class CustomCooldown(commands.Cog):
         if not users:
             await ctx.send_help()
             return
-
         already_added = []
         is_bot = []
         final_message = ""
@@ -499,7 +496,6 @@ class CustomCooldown(commands.Cog):
                     iu.append(user.id)
                 else:
                     already_added.append(user)
-
         if len(is_bot) > 1:
             final_message += "Those users are bots and cannot be added: {bots}\n".format(
                 bots=humanize_list(is_bot)
@@ -525,7 +521,6 @@ class CustomCooldown(commands.Cog):
         if not users:
             await ctx.send_help()
             return
-
         already_removed = []
         async with self.config.guild(ctx.guild).ignore_users() as iu:
             for user in users:
@@ -533,7 +528,6 @@ class CustomCooldown(commands.Cog):
                     iu.remove(user.id)
                 else:
                     already_removed.append(user.name)
-
         message = ""
         if len(already_removed) > 1:
             message = "Those users are already not ignored: {list}".format(
@@ -578,7 +572,6 @@ class CustomCooldown(commands.Cog):
         if not roles:
             await ctx.send_help()
             return
-
         already_added = []
         final_message = ""
         async with self.config.guild(ctx.guild).ignore_roles() as ir:
@@ -587,7 +580,6 @@ class CustomCooldown(commands.Cog):
                     ir.append(role.id)
                 else:
                     already_added.append(role.name)
-
         if len(already_added) > 1:
             final_message += "Those roles are already ignored: {list}".format(
                 list=humanize_list(already_added)
@@ -605,7 +597,6 @@ class CustomCooldown(commands.Cog):
         if not roles:
             await ctx.send_help()
             return
-
         already_removed = []
         async with self.config.guild(ctx.guild).ignore_roles() as ir:
             for role in roles:
@@ -613,7 +604,6 @@ class CustomCooldown(commands.Cog):
                     ir.remove(role.id)
                 else:
                     already_removed.append(role.name)
-
         message = ""
         if len(already_removed) > 1:
             message = "Those roles are already not ignored: {list}".format(
@@ -704,7 +694,6 @@ class CustomCooldown(commands.Cog):
             for role in await self.config.guild(message.guild).ignore_roles()
         ):
             return
-
         cooldown_channels = await self.config.guild(message.guild).cooldown_channels()
         cooldown_categories = await self.config.guild(
             message.guild
@@ -717,11 +706,9 @@ class CustomCooldown(commands.Cog):
         for category_id in categories_ids:
             for channels in cooldown_categories[category_id]["channels"]:
                 catgories_channels.append(str(channels))
-
         channel = message.channel
         if str(channel.id) not in list(cooldown_channels.keys()) + catgories_channels:
             return
-
         send_dm = await self.config.guild(message.guild).send_dm()
         if str(channel.id) in cooldown_channels:
             await self._handle_channel_cooldown(
