@@ -23,7 +23,7 @@ log.setLevel(logging.DEBUG)
 class Core(commands.Cog):
 
     __author__ = ["Predeactor"]
-    __version__ = "Alpha 0.3"
+    __version__ = "Alpha 0.4-dev"
 
     def __init__(self, bot: Red):
         self.bot = bot
@@ -353,7 +353,9 @@ class Core(commands.Cog):
         data[me] = discord.PermissionOverwrite(read_messages=True, send_messages=True)
         return data
 
-    def _mute_or_unmute_user(self, channel: discord.TextChannel, user: discord.Member, option: bool):
+    def _mute_or_unmute_user(
+        self, channel: discord.TextChannel, user: discord.Member, option: bool
+    ):
         actual_perm = channel.overwrites
         actual_perm[user] = discord.PermissionOverwrite(send_messages=option)
         return actual_perm
