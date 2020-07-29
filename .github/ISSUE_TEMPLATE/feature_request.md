@@ -1,7 +1,7 @@
 ---
 name: Feature request
 about: Any ideas for the repo or a cog ? Choose this option.
-title: "[Feature]"
+title: ''
 labels: suggestion(s)
 assignees: ''
 
