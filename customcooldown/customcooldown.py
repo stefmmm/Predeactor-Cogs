@@ -22,7 +22,7 @@ class CustomCooldown(commands.Cog):
     """
 
     __author__ = ["Maaz", "Predeactor"]
-    __version__ = "v1.2.2.1"
+    __version__ = "v1.2.3"
 
     def __init__(self, bot):
         self.bot = bot
@@ -162,25 +162,6 @@ class CustomCooldown(commands.Cog):
     async def slow(self, ctx: commands.GuildContext):
         """Configure categories and channel."""
         pass
-
-    @slow.command()
-    @commands.is_owner()
-    async def reset(self, ctx: commands.Context):
-        """Resets all guild data."""
-        predicate = MessagePredicate.yes_or_no(ctx)
-        await ctx.send(
-            warning(bold("Are you sure you want to delete ALL guilds?") + " (y/n)")
-        )
-        try:
-            await self.bot.wait_for("message", check=predicate)
-        except asyncio.TimeoutError:
-            await ctx.tick()
-            return
-        if predicate.result:
-            await self.config.clear_all_guilds()
-            await ctx.send("Guild data reset.")
-        else:
-            await ctx.send("Better to touch nothing...")
 
     # Slow: Category
 
