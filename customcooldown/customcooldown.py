@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Literal
 
 import discord
+from contextlib import suppress as suppressor
 
 from redbot.core import Config, checks, commands
 from redbot.core.commands.converter import parse_timedelta
@@ -12,8 +13,12 @@ from redbot.core.utils.chat_formatting import (
     humanize_timedelta,
     pagify,
     warning,
+    box,
 )
 from redbot.core.utils.predicates import MessagePredicate
+
+default_channel_message = "Sorry {member}, this channel is ratelimited! You'll be able to post again in {channel} in {time}."
+default_category_message = "Sorry {member}, this category is ratelimited! You'll be able to post again in {category} in {time}."
 
 
 class CustomCooldown(commands.Cog):
@@ -23,7 +28,7 @@ class CustomCooldown(commands.Cog):
     """
 
     __author__ = ["Maaz", "Predeactor"]
-    __version__ = "v1.2.3"
+    __version__ = "v1.3"
 
     async def red_delete_data_for_user(
         self,
@@ -47,6 +52,8 @@ class CustomCooldown(commands.Cog):
             ignore_bot=True,
             ignore_roles=[],
             ignore_users=[],
+            channel_message=default_channel_message,
+            category_message=default_category_message,
         )
         self.date_format = "%d-%m-%Y:%H-%M-%S"
         self.dmed = []
@@ -88,18 +95,21 @@ class CustomCooldown(commands.Cog):
                     pass
                 if send_dm:
                     if not user.bot:
-                        try:
+                        with suppressor(Exception):
                             remaining_time = humanize_timedelta(
                                 seconds=(channel_data["cooldown_time"] - total_seconds)
                             )
-                            await user.send(
-                                "Sorry, this channel is ratelimited! You'll be able to "
-                                "post again in {channel} in {time}.".format(
-                                    channel=channel.mention, time=remaining_time
+                            send_me = (
+                                (
+                                    await self.config.guild(
+                                        message.guild
+                                    ).channel_message()
                                 )
+                                .replace("{time}", remaining_time)
+                                .replace("{channel}", channel.mention)
+                                .replace("{member}", message.author.name)
                             )
-                        except discord.Forbidden:
-                            pass
+                            await user.send(send_me)
             else:
                 deleted = None
                 channel_data["users_on_cooldown"][
@@ -136,24 +146,27 @@ class CustomCooldown(commands.Cog):
             if total_seconds <= category_data["cooldown_time"]:
                 try:
                     await message.delete()
+                    deleted = True
                 except (discord.NotFound, discord.Forbidden):
                     deleted = False
                     pass
                 if send_dm:
                     if not user.bot:
-                        try:
-                            s = category_data["cooldown_time"] - total_seconds
-                            remaining_time = humanize_timedelta(seconds=s)
-                            await user.send(
-                                "Hey there, can you chill out for a moment?\n"
-                                "{category} is ratelimited and you need to wait"
-                                " {time}! Please note that this channel shares a"
-                                " rate limit with the parent channel category.".format(
-                                    category=channel.mention, time=remaining_time
-                                )
+                        with suppressor(Exception):
+                            remaining_time = humanize_timedelta(
+                                seconds=category_data["cooldown_time"] - total_seconds
                             )
-                        except discord.Forbidden:
-                            pass
+                            send_me = (
+                                (
+                                    await self.config.guild(
+                                        message.guild
+                                    ).category_message()
+                                )
+                                .replace("{time}", remaining_time)
+                                .replace("{category}", category.name)
+                                .replace("{member}", message.author.name)
+                            )
+                            await user.send(send_me)
             else:
                 deleted = None
                 category_data["users_on_cooldown"][str(user.id)] = now.strftime(
@@ -173,7 +186,7 @@ class CustomCooldown(commands.Cog):
     @commands.guild_only()
     @checks.admin()
     async def slow(self, ctx: commands.GuildContext):
-        """Configure categories and channel."""
+        """Configure categories and channel cooldown."""
         pass
 
     # Slow: Category
@@ -185,7 +198,7 @@ class CustomCooldown(commands.Cog):
 
     @slowcategory.command(name="list")
     async def listcategory(self, ctx: commands.Context):
-        """List cooldowned category."""
+        """List cooldowned categories."""
         text = ""
         cooldown_categories = await self.config.guild(ctx.guild).cooldown_categories()
         for category_id in cooldown_categories.keys():
@@ -208,7 +221,14 @@ class CustomCooldown(commands.Cog):
     async def addcategory(
         self, ctx: commands.Context, category: discord.CategoryChannel, *, time: str
     ):
-        """Add a category cooldown."""
+        """Add a category cooldown.
+        
+        Time format can be the following:
+        - `1 hour`
+        - `1h`
+        - `1 hour 5 minutes`
+        - `2h30m10s`
+        """
         cooldown_categories = await self.config.guild(ctx.guild).cooldown_categories()
         if str(category.id) in cooldown_categories:
             await ctx.send(
@@ -236,7 +256,14 @@ class CustomCooldown(commands.Cog):
     async def editcategory(
         self, ctx: commands.Context, category: discord.CategoryChannel, *, time: str
     ):
-        """Edit a category cooldown."""
+        """Edit a category cooldown.
+        
+        Time format can be the following:
+        - `1 hour`
+        - `1h`
+        - `1 hour 5 minutes`
+        - `2h30m10s`
+        """
         cooldown_categories = await self.config.guild(ctx.guild).cooldown_categories()
         if str(category.id) not in cooldown_categories:
             await ctx.send(
@@ -285,7 +312,7 @@ class CustomCooldown(commands.Cog):
     async def updatecategory(
         self, ctx: commands.Context, *, category: discord.CategoryChannel
     ):
-        """Update configuration to sync with new and old channel(s) into the category."""
+        """Update category's data to sync with new and old channel(s) into the category."""
         data = await self.config.guild(ctx.guild).cooldown_categories()
         if str(category.id) not in data:
             await ctx.send(
@@ -329,7 +356,14 @@ class CustomCooldown(commands.Cog):
     async def addchannel(
         self, ctx: commands.Context, channel: discord.TextChannel, *, time: str
     ):
-        """Add a channel cooldown."""
+        """Add a channel cooldown.
+        
+        Time format can be the following:
+        - `1 hour`
+        - `1h`
+        - `1 hour 5 minutes`
+        - `2h30m10s`
+        """
         cooldown_channels = await self.config.guild(ctx.guild).cooldown_channels()
         if str(channel.id) in cooldown_channels:
             await ctx.send(
@@ -354,7 +388,14 @@ class CustomCooldown(commands.Cog):
     async def editchannel(
         self, ctx: commands.Context, channel: discord.TextChannel, *, time: str
     ):
-        """Edit a channel cooldown."""
+        """Edit a channel cooldown.
+        
+        Time format can be the following:
+        - `1 hour`
+        - `1h`
+        - `1 hour 5 minutes`
+        - `2h30m10s`
+        """
         cooldown_channels = await self.config.guild(ctx.guild).cooldown_channels()
         if str(channel.id) in cooldown_channels:
             time = await self._return_time(ctx, time)
@@ -404,12 +445,12 @@ class CustomCooldown(commands.Cog):
 
     @commands.group()
     @commands.guild_only()
+    @checks.admin()
     async def slowset(self, ctx: commands.GuildContext):
-        """Set differents options."""
+        """Set differents options for cooldown."""
         pass
 
     @slowset.command()
-    @checks.admin()
     async def dm(self, ctx: commands.Context, option: bool = None):
         """
         Enable/Disable DM message when triggering cooldown.
@@ -426,7 +467,6 @@ class CustomCooldown(commands.Cog):
             await ctx.send_help()
 
     @slowset.command()
-    @checks.admin()
     async def ignorebot(self, ctx: commands.Context, option: bool = None):
         """
         Enable/Disable ignoring bots when they send a message in channel
@@ -449,7 +489,6 @@ class CustomCooldown(commands.Cog):
     # Slowset: Ignore Users
 
     @slowset.group(name="ignoreusers", aliases=["ignoreuser", "iu"])
-    @checks.admin()
     async def slowignoreusers(self, ctx: commands.GuildContext):
         """Add or remove users from the ignored list of cooldown."""
         pass
@@ -537,7 +576,6 @@ class CustomCooldown(commands.Cog):
     # Slowset: Ignore Roles
 
     @slowset.group(name="ignoreroles", aliases=["ignorerole", "ir"])
-    @checks.admin()
     async def slowignoreroles(self, ctx: commands.GuildContext):
         """Add or remove roles from the ignored list of cooldown."""
         pass
@@ -609,6 +647,58 @@ class CustomCooldown(commands.Cog):
             for line in pagify(message):
                 await ctx.send(line)
         await ctx.tick()
+
+    # Slowed : Message settings
+
+    @slowset.command()
+    async def channelmessage(self, ctx: commands.Context, *, message: str = None):
+        """Change the message to send to user when triggering channels cooldown.
+        
+        Parameters:
+        - `{time}` will be replaced with remaining cooldown time.
+        - `{member}` will get replaced with member's name.
+        - `{channel}` will get replaced with channel's name.
+
+        To use default message, use `None` for message.
+        """
+        if not message:
+            await ctx.send_help()
+            result = "Actual message:\n" + box(
+                await self.config.guild(ctx.guild).category_message()
+            )
+        if message:
+            if message.lower() == "none":
+                await self.config.guild(ctx.guild).channel_message.clear()
+                result = "Channel message set to default."
+            else:
+                await self.config.guild(ctx.guild).channel_message.set(message)
+                result = "The message has been replaced."
+        await ctx.send(result)
+
+    @slowset.command()
+    async def categorymessage(self, ctx: commands.Context, *, message: str = None):
+        """Change the message to send to user when triggering categories cooldown.
+        
+        Parameters:
+        - `{time}` will be replaced with remaining cooldown time.
+        - `{member}` will get replaced with member's name.
+        - `{category}` will get replaced with category's name.
+
+        To use default message, use `None` for message.
+        """
+        if not message:
+            await ctx.send_help()
+            result = "Actual message:\n" + box(
+                await self.config.guild(ctx.guild).category_message()
+            )
+        if message:
+            if message.lower() == "none":
+                await self.config.guild(ctx.guild).category_message.clear()
+                result = "Category message set to default."
+            else:
+                await self.config.guild(ctx.guild).category_message.set(message)
+                result = "The message has been replaced."
+        await ctx.send(result)
 
     # Bypassing
 
@@ -790,7 +880,7 @@ class CustomCooldown(commands.Cog):
     async def _dm_owner(self, owner: discord.Member, channel: discord.TextChannel):
         if owner.id in self.dmed:
             return
-        try:
+        with suppressor(Exception):
             await owner.send(
                 "Hello. I tried to delete a message in {channel} because this "
                 "channel is registered as cooldowned, but I was unable to delete "
@@ -798,6 +888,4 @@ class CustomCooldown(commands.Cog):
                 "delete messages in this channel.\nThis message won't reappear "
                 "until the next bot reboot.".format(channel=channel.mention)
             )
-        except discord.Forbidden:
-            pass
         self.dmed.append(owner.id)
