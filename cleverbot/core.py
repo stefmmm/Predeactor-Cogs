@@ -13,7 +13,7 @@ from redbot.core.utils.chat_formatting import humanize_list
 class Core(commands.Cog):
 
     __author__ = ["Predeactor"]
-    __version__ = "v1.0.3"
+    __version__ = "v1.0.2"
 
     def __init__(self, bot: Red):
         self.bot = bot
