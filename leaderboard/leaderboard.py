@@ -4,6 +4,7 @@ import time
 
 import discord
 
+from typing import Literal
 from redbot.core import Config, checks, commands
 from redbot.core.utils import AsyncIter
 from redbot.core.utils.chat_formatting import box, humanize_list, pagify
@@ -17,6 +18,15 @@ class LeaderBoard(commands.Cog):
 
     __author__ = ["Predeactor"]
     __version__ = "v1.0"
+
+    async def red_delete_data_for_user(
+        self,
+        *,
+        requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
+        user_id: int,
+    ):
+        if requester == ("discord_deleted_user" or "user_strict"):
+            await self.data.user_from_id(user_id).clear()
 
     def __init__(self, bot):
         self.bot = bot

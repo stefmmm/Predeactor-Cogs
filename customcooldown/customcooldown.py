@@ -1,5 +1,6 @@
 import asyncio
 from datetime import datetime
+from typing import Literal
 
 import discord
 
@@ -23,6 +24,18 @@ class CustomCooldown(commands.Cog):
 
     __author__ = ["Maaz", "Predeactor"]
     __version__ = "v1.2.3"
+
+    async def red_delete_data_for_user(
+        self,
+        *,
+        requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
+        user_id: int,
+    ):
+        for guild in self.bot.guilds:
+            if requester in ("owner", "uesr_strict", "discord_deleted_user"):
+                async with self.config.guild(guild).ignore_users() as iu:
+                    if user_id in iu:
+                        iu.remove(user_id)
 
     def __init__(self, bot):
         self.bot = bot
