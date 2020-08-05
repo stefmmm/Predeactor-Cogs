@@ -26,6 +26,9 @@ class Captcher(Core):
     async def giverole(self, ctx: commands.Context, role_to_give: discord.Role = None):
         """
         Give a role when the user succesfully completed the captacha.
+
+        If a role is already set and you don't provide a role, actual role will
+        be deleted.
         """
         if role_to_give:
             await self.data.guild(ctx.guild).giverole.set(role_to_give.id)
@@ -38,6 +41,30 @@ class Captcher(Core):
         else:
             await ctx.send_help()
             message = box("There's no role in configuration.")
+        await ctx.send(message)
+
+    @config.command()
+    async def temprole(
+        self, ctx: commands.Context, temporary_role: discord.Role = None
+    ):
+        """
+        Role to give when someone join, it will be automatically removed after 
+        passing captcha.
+
+        If a role is already set and you don't provide a role, actual role will
+        be deleted.
+        """
+        if temporary_role:
+            await self.data.guild(ctx.guild).temp_role.set(temporary_role.id)
+            message = "{role.name} will be given when members start the captcha.".format(
+                role=temporary_role
+            )
+        elif temporary_role is None and await self.data.guild(ctx.guild).temp_role():
+            await self.data.guild(ctx.guild).temp_role.clear()
+            message = "Temporary role configuration removed."
+        else:
+            await ctx.send_help()
+            message = box("There's no temporary role in configuration.")
         await ctx.send(message)
 
     @config.command()
@@ -71,8 +98,10 @@ class Captcher(Core):
     async def logschannel(
         self, ctx: commands.Context, channel: discord.TextChannel = None
     ):
-        """Set the log channel, really recommended for knowing who passed verification
-         or who failed."""
+        """
+        Set the log channel, really recommended for knowing who passed verification 
+        or who failed.
+        """
         if channel:
             result, answer = await self._permissions_checker(channel)
             if result:
@@ -98,11 +127,10 @@ class Captcher(Core):
         if true_or_false is not None:
             channel_id = await self.data.guild(ctx.guild).verification_channel()
             fetched_channel = self.bot.get_channel(channel_id)
-            temp_role = await self.data.guild(ctx.guild).temp_role()
             if fetched_channel:
                 result, answer = await self._permissions_checker(fetched_channel)
                 if result:
-                    if temp_role:
+                    if await self.data.guild(ctx.guild).temp_role():
                         await self.data.guild(ctx.guild).active.set(true_or_false)
                         message = "Captcher is now {term}activate.".format(
                             term="" if true_or_false else "de"
