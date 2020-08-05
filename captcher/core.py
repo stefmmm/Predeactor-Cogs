@@ -11,7 +11,8 @@ import discord
 from captcha.image import ImageCaptcha
 from redbot.core import Config, commands, modlog
 from redbot.core.bot import Red
-from redbot.core.data_manager import bundled_data_path
+
+# from redbot.core.data_manager import bundled_data_path
 from redbot.core.utils.chat_formatting import bold, error, humanize_list, info
 from redbot.core.utils.predicates import MessagePredicate
 from PIL import ImageFont
@@ -35,7 +36,7 @@ class Core(commands.Cog):
             logs_channel=None,
             temp_role=None,
         )
-        self.path = bundled_data_path(self)
+        # self.path = bundled_data_path(self)
         self._cache = {}
         self._init_logger()
         super().__init__()
@@ -106,12 +107,14 @@ class Core(commands.Cog):
                 "{member}, you passed the verification.".format(member=member.mention)
             )
             role = await self._give_role(member)
+            if isinstance(role, bool):
+                to_log = "Removed temporary role."
+            elif isinstance(role, str):
+                to_log = f"Received {role} and removed temporary role."
+            else:
+                to_log = "Unable to give and remove roles."
             await self._report_log(
-                member,
-                "completed",
-                f"{member}: Received {role} and/or removed temporary role."
-                if role
-                else "Unable to give and remove roles.",
+                member, "completed", to_log,
             )
             failed = False
         else:
