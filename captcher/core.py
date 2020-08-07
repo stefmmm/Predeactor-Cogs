@@ -287,11 +287,11 @@ class Core(commands.Cog):
 
     async def _role_keeper(self, member: discord.Member):
         roles = member.roles[-1:0:-1]
+        lister = []
         if roles:
-            lister = []
             for role in roles:
                 lister.append(role)
-        return lister
+        return lister or None
 
     async def _roles_remover(self, member: discord.Member):
         roles = member.roles[-1:0:-1]
@@ -312,8 +312,12 @@ class Core(commands.Cog):
             )
 
             verification_overwrite = {
-                ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False),
-                role: discord.PermissionOverwrite(read_messages=True, send_messages=True),
+                ctx.guild.default_role: discord.PermissionOverwrite(
+                    read_messages=False
+                ),
+                role: discord.PermissionOverwrite(
+                    read_messages=True, send_messages=True
+                ),
                 ctx.guild.me: discord.PermissionOverwrite(
                     read_messages=True, manage_messages=True
                 ),

@@ -266,5 +266,5 @@ class Captcher(Core):
         captched = await self._challenge(
             user, channel, f"{user} challenged manually by {ctx.author}.",
         )
-        if method == "all" and captched:
+        if method == "all" and captched and roles:
             await self._add_role(user, roles)
