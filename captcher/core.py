@@ -194,7 +194,7 @@ class Core(commands.Cog):
         level_list = {
             "started": bold(info(f"{member} started a captcha verification: "))
             + reason,
-            "error": bold(error("Error will Captcha was running for {member}: ")) 
+            "error": bold(error(f"Error will Captcha was running for {member}: "))
             + reason,
             "completed": bold(
                 f"\N{WHITE HEAVY CHECK MARK} {member} has completed Captcha: "
