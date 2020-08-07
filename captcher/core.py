@@ -194,13 +194,14 @@ class Core(commands.Cog):
         level_list = {
             "started": bold(info(f"{member} started a captcha verification: "))
             + reason,
-            "error": bold(error("Error will Captcha was running: ")) + reason,
+            "error": bold(error("Error will Captcha was running for {member}: ")) 
+            + reason,
             "completed": bold(
-                "\N{WHITE HEAVY CHECK MARK} Member has completed Captcha: "
+                f"\N{WHITE HEAVY CHECK MARK} {member} has completed Captcha: "
             )
             + reason,
             "failed": bold(f"\N{WOMANS BOOTS} {member} got kicked: ") + reason,
-            "unknow": bold("Unknow report: ") + reason,
+            "unknow": bold(f"Unknow report for {member}: ") + reason,
         }
         if level not in level_list:
             level = "unknow"
@@ -214,8 +215,6 @@ class Core(commands.Cog):
             channel = self._cache[member.id]
         channel_id = await self.data.guild(member.guild).logs_channel()
         channel = self.bot.get_channel(channel_id)
-        if channel is None:
-            return False
         self._cache[member.id] = channel_id
         return channel
 
