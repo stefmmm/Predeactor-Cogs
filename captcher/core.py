@@ -140,7 +140,8 @@ class Core(commands.Cog):
                 await self._report_log(
                     member, "error", f"Cannot unmute {member} in channel after kicking."
                 )
-        await message.delete()
+        if message:
+            await message.delete()
         await final_answer.delete()
         if member.id in self._cache:
             del self._cache[member.id]
@@ -158,16 +159,13 @@ class Core(commands.Cog):
         except asyncio.TimeoutError:
             with contextlib.suppress(Exception):
                 await member.send(
-                    f"Hello, you've been automatically kicked from {guild} for not "
+                    "Hello, you've been automatically kicked from {guild} for not "
                     "answering the captcha to enter into the server. You can come back "
-                    "and complete the captcha again."
+                    "and complete the captcha again.".format(guild=channel.guild)
                 )
             await self._kicker(member)
-        if user_message.content == str(code):
-            success = True
-        else:
-            success = False
-        return user_message, success
+            return None, None
+        return user_message, True if user_message.content == str(code) else False
 
     async def _give_role(self, member: discord.Member):
         guild = member.guild
@@ -292,7 +290,7 @@ class Core(commands.Cog):
         if roles:
             lister = []
             for role in roles:
-                lister.append(role.id)
+                lister.append(role)
         return lister
 
     async def _roles_remover(self, member: discord.Member):
@@ -305,40 +303,41 @@ class Core(commands.Cog):
         for role in role_list:
             await member.add_roles(role)
 
-    async def _overwrite_channel(self, ctx: commands.Context):
-        role = await ctx.guild.create_role(
-            name="Unverified",
-            mentionable=True,
-            reason="Automatic creation by Captcher (Automatic setup)",
-        )
+    async def _overwrite_server(self, ctx: commands.Context):
+        async with ctx.typing():
+            role = await ctx.guild.create_role(
+                name="Unverified",
+                mentionable=True,
+                reason="Automatic creation by Captcher (Automatic setup)",
+            )
 
-        verification_overwrite = {
-            ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False),
-            role: discord.PermissionOverwrite(read_messages=True, send_messages=True),
-            ctx.guild.me: discord.PermissionOverwrite(
-                read_messages=True, manage_messages=True
-            ),
-        }
+            verification_overwrite = {
+                ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False),
+                role: discord.PermissionOverwrite(read_messages=True, send_messages=True),
+                ctx.guild.me: discord.PermissionOverwrite(
+                    read_messages=True, manage_messages=True
+                ),
+            }
 
-        mods = await self.bot.get_mod_roles(ctx.guild)
-        admins = await self.bot.get_admin_roles(ctx.guild)
-        logs_overwrites = self._make_staff_overwrites(
-            mods, admins, ctx.guild.me, ctx.guild.default_role
-        )
-        for channel in ctx.guild.channels:
-            actual_perm = channel.overwrites
-            actual_perm[role] = discord.PermissionOverwrite(read_messages=False)
-            await channel.edit(overwrites=actual_perm)
+            mods = await self.bot.get_mod_roles(ctx.guild)
+            admins = await self.bot.get_admin_roles(ctx.guild)
+            logs_overwrites = self._make_staff_overwrites(
+                mods, admins, ctx.guild.me, ctx.guild.default_role
+            )
+            for channel in ctx.guild.channels:
+                actual_perm = channel.overwrites
+                actual_perm[role] = discord.PermissionOverwrite(read_messages=False)
+                await channel.edit(overwrites=actual_perm)
 
-        verif = await ctx.guild.create_text_channel(
-            "verification", overwrites=verification_overwrite
-        )
-        logs = await ctx.guild.create_text_channel(
-            "verification-logs", overwrites=logs_overwrites
-        )
-        await self.data.guild(ctx.guild).verification_channel.set(verif.id)
-        await self.data.guild(ctx.guild).logs_channel.set(logs.id)
-        await self.data.guild(ctx.guild).temp_role.set(role.id)
+            verif = await ctx.guild.create_text_channel(
+                "verification", overwrites=verification_overwrite
+            )
+            logs = await ctx.guild.create_text_channel(
+                "verification-logs", overwrites=logs_overwrites
+            )
+            await self.data.guild(ctx.guild).verification_channel.set(verif.id)
+            await self.data.guild(ctx.guild).logs_channel.set(logs.id)
+            await self.data.guild(ctx.guild).temp_role.set(role.id)
 
     def _make_staff_overwrites(
         self, mods: list, admins: list, me: discord.Member, default: discord.Role
@@ -363,13 +362,14 @@ class Core(commands.Cog):
         actual_perm[user] = discord.PermissionOverwrite(send_messages=option)
         return actual_perm
 
-    async def _ask_for_role_add(self, ctx):
+    async def _ask_for_role_add(self, ctx: commands.Context):
         await ctx.send("Do you use a role to access to the server? (y/n)")
         try:
             predicator = MessagePredicate.yes_or_no(ctx)
             await self.bot.wait_for("message", timeout=30, check=predicator)
         except asyncio.TimeoutError:
             await ctx.send("Question cancelled, caused by timeout.")
+            return
         if predicator.result:
             await ctx.send(
                 "Which role should I give when user pass captcha? (Role ID/Name/Mention)"
@@ -381,3 +381,4 @@ class Core(commands.Cog):
                 await ctx.send("Question cancelled, caused by timeout.")
                 return
             await self.data.guild(ctx.guild).giverole.set(role.result.id)
+        return True

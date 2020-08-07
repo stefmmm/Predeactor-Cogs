@@ -176,19 +176,20 @@ class Captcher(Core):
                 await ctx.send("I require the Adminstrator permission first.")
                 return
             await self.data.guild(ctx.guild).clear()
-            await self._overwrite_channel(ctx)
+            await self._overwrite_server(ctx)
         else:
             await ctx.send("You will have to configure Captcher yourself.")
-        await self._ask_for_role_add(ctx)
-        await ctx.send("Configuration is done. Activate Captcher? (y/n)")
-        try:
-            predicator = MessagePredicate.yes_or_no(ctx)
-            await self.bot.wait_for("message", timeout=30, check=predicator)
-        except asyncio.TimeoutError:
-            await ctx.send("Question cancelled, caused by timeout.")
-        if predicator.result:
-            await self.data.guild(ctx.guild).active.set(True)
-        await ctx.send("Done.")
+        r = await self._ask_for_role_add(ctx)
+        if r:
+            await ctx.send("Configuration is done. Activate Captcher? (y/n)")
+            try:
+                predicator = MessagePredicate.yes_or_no(ctx)
+                await self.bot.wait_for("message", timeout=30, check=predicator)
+            except asyncio.TimeoutError:
+                await ctx.send("Question cancelled, caused by timeout.")
+            if predicator.result:
+                await self.data.guild(ctx.guild).active.set(True)
+            await ctx.send("Done.")
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
@@ -219,17 +220,14 @@ class Captcher(Core):
     async def challengeuser(self, ctx: commands.Context, *, user: discord.Member):
         """Make an user pass the captcha again."""
         if user.bot:
-            await ctx.send(
-                "Bots are my friend, I cannot let you do that to them, it's too"
-                " complex."
-            )
+            await ctx.send("Bots are my friend, I cannot let you do that to them.")
             return
         roles_methods = {"1": "all", "2": "configured", "3": None}
         await ctx.send(
-            "Choose the following numnber:\n"
+            "Choose the following number:\n"
             "1: Remove all roles and re-add them after verification.\n"
             "2: Only remove configured role and re-add after verification.\n"
-            "3: Do not remove roles. (Channel must be visible)"
+            "3: Do not remove role(s). (Channel must be visible)"
         )
         try:
             user_message = await self.bot.wait_for(
@@ -237,25 +235,32 @@ class Captcher(Core):
             )
         except asyncio.TimeoutError:
             await ctx.send("Command cancelled, caused by timeout.")
-        if user_message.content not in roles_methods:
-            await ctx.send("This method is not available. Aborting.")
             return
-        else:
-            method = roles_methods[user_message.content]
+        if user_message.content not in roles_methods:
+            await ctx.send("This method is not available.")
+            return
+        method = roles_methods[user_message.content]
         if method == "all":
             roles = await self._role_keeper(user)
             await self._roles_remover(user)
         elif method == "configured":
-            await user.remove_roles(
-                ctx.guild.get_role(await self.data.guild(ctx.author.guild).giverole())
-            )
+            role_conf = await self.data.guild(ctx.author.guild).giverole()
+            if role_conf:
+                role = ctx.guild.get_role(role_conf)
+            if role:
+                await user.remove_roles(role)
+            else:
+                await ctx.send(
+                    "I cannot find the configured role, choose another method or add a"
+                    " new role."
+                )
         verification_channel = await self.data.guild(
             ctx.author.guild
         ).verification_channel()
         channel = self.bot.get_channel(verification_channel)
         if not channel:
             await ctx.send(
-                "I cannot find the verification channel, please readd one again."
+                "I cannot find the verification channel, please add one again."
             )
             return
         captched = await self._challenge(
