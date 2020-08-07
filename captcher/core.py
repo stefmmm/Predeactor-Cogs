@@ -163,8 +163,7 @@ class Core(commands.Cog):
                     "answering the captcha to enter into the server. You can come back "
                     "and complete the captcha again.".format(guild=channel.guild)
                 )
-            await self._kicker(member)
-            return None, None
+            return None, False
         return user_message, True if user_message.content == str(code) else False
 
     async def _give_role(self, member: discord.Member):
