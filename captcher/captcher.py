@@ -156,6 +156,8 @@ class Captcher(Core):
     @config.command()
     async def autoconfig(self, ctx: commands.Context):
         """Automatically set Captcher."""
+        await ctx.send("Autoconfig disabled by cog.")
+        return
         await ctx.send(
             "This command will:\n"
             "- Create a new role called: Unverified\n"
