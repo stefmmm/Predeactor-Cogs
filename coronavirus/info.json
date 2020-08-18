@@ -1,5 +1,8 @@
 {
-  "author": ["Predeactor"],
+  "author": [
+    "Predeactor"
+  ],
+  "end_user_data_statement": "This cog does not save data about users persistently.",
   "description": "Retrieve statistics about the Covid-19.",
   "short": "Retrieve statistics about the Covid-19.",
   "install_msg": "Thank for installing my Coronavirus cog."
