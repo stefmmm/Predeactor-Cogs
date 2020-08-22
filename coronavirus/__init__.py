@@ -1,6 +1,6 @@
 from .coronavirus import Coronavirus
 
-__end_user_data_statement__ = "This cog does not save data about users persistently."
+end_user_data_statement = "This cog does not save data about users persistently."
 
 
 def setup(bot):

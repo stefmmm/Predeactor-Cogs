@@ -1,6 +1,4 @@
-import asyncio
 import logging
-import random
 from datetime import datetime
 
 import discord
@@ -76,7 +74,7 @@ class CleverBot(Core):
         session = self.conversation[str(ctx.author.id)]["session"]
         timer = self.conversation[str(ctx.author.id)]["timer"]
         channel = self.conversation[str(ctx.author.id)]["channel"]
-        # If the timer is exceded.
+        # If the timer is exceeded.
         if (datetime.now() - timer).seconds > 300:
             channel = self.bot.get_channel(channel)
             await channel.send(self._message_by_timeout())

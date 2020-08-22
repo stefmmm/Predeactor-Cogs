@@ -17,8 +17,10 @@ from redbot.core.utils.chat_formatting import (
 )
 from redbot.core.utils.predicates import MessagePredicate
 
-default_channel_message = "Sorry {member}, this channel is ratelimited! You'll be able to post again in {channel} in {time}."
-default_category_message = "Sorry {member}, this category is ratelimited! You'll be able to post again in {category} in {time}."
+default_channel_message = "Sorry {member}, this channel is ratelimited! You'll be able to post again in {channel} in " \
+                          "{time}. "
+default_category_message = "Sorry {member}, this category is ratelimited! You'll be able to post again in {category} " \
+                           "in {time}. "
 
 
 class CustomCooldown(commands.Cog):
@@ -238,7 +240,7 @@ class CustomCooldown(commands.Cog):
                 )
             )
             return
-        time = await self._return_time(ctx, time)
+        time = await self._return_time(time)
         if time:
             await self._update_category_data(ctx, category, time)
             await ctx.send(
@@ -267,10 +269,10 @@ class CustomCooldown(commands.Cog):
         cooldown_categories = await self.config.guild(ctx.guild).cooldown_categories()
         if str(category.id) not in cooldown_categories:
             await ctx.send(
-                "{category} does not have cooldown.".format(channel=category.name)
+                "{category} does not have cooldown.".format(category=category.name)
             )
             return
-        time = await self._return_time(ctx, time)
+        time = await self._return_time(time)
         if time:
             await self._update_category_data(ctx, category, time)
             await ctx.send(
@@ -303,7 +305,7 @@ class CustomCooldown(commands.Cog):
             await ctx.tick()
             return
         if predicate.result:
-            d = await self._delete_category(ctx, category)
+            await self._delete_category(ctx, category)
             await ctx.tick()
         else:
             await ctx.send("Cooldowned, forever...")
@@ -373,7 +375,7 @@ class CustomCooldown(commands.Cog):
                 )
             )
             return
-        time = await self._return_time(ctx, time)
+        time = await self._return_time(time)
         if time:
             await self._update_channel_data(ctx, channel, time)
             await ctx.send(
@@ -398,7 +400,7 @@ class CustomCooldown(commands.Cog):
         """
         cooldown_channels = await self.config.guild(ctx.guild).cooldown_channels()
         if str(channel.id) in cooldown_channels:
-            time = await self._return_time(ctx, time)
+            time = await self._return_time(time)
         else:
             await ctx.send(
                 "{channel} does not have cooldown.".format(channel=channel.mention)
@@ -436,7 +438,7 @@ class CustomCooldown(commands.Cog):
             await ctx.tick()
             return
         if predicate.result:
-            d = await self._delete_channel(ctx, channel)
+            await self._delete_channel(ctx, channel)
             await ctx.tick()
         else:
             await ctx.send("Peace and quiet...")
@@ -862,7 +864,8 @@ class CustomCooldown(commands.Cog):
                 )
                 return
 
-    async def _return_time(self, ctx: commands.Context, time):
+    @staticmethod
+    async def _return_time(time):
         cooldown_time = parse_timedelta(time)
         if cooldown_time is None:
             return None

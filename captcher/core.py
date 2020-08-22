@@ -2,10 +2,10 @@ import asyncio
 import contextlib
 import datetime
 import logging
-from os import listdir
-from os.path import isfile, join
+# from os import listdir
+# from os.path import isfile, join
 import time
-from random import randint, choice
+from random import randint
 
 import discord
 from captcha.image import ImageCaptcha
@@ -15,7 +15,7 @@ from redbot.core.bot import Red
 # from redbot.core.data_manager import bundled_data_path
 from redbot.core.utils.chat_formatting import bold, error, humanize_list, info
 from redbot.core.utils.predicates import MessagePredicate
-from PIL import ImageFont
+# from PIL import ImageFont
 
 log = logging.getLogger("predeactor.captcher")
 log.setLevel(logging.DEBUG)
@@ -74,7 +74,7 @@ class Core(commands.Cog):
         dfile = discord.File(image, filename=str(member.id) + "-captcha.png")
         message_content = (
             "Hello {member}, this server include an extra security layout to protect "
-            "there members. You're asked to complete a security captacha in order to "
+            "there members. You're asked to complete a security captcha in order to "
             "join this server. If you fail or take too much time to answer (5 "
             "minutes), you will be automatically kicked from this server.\nNote: "
             "The captcha doesn't include space.".format(member=member.mention)
@@ -121,7 +121,7 @@ class Core(commands.Cog):
             perms = self._mute_or_unmute_user(channel, member, False)
             try:
                 await channel.edit(overwrites=perms)
-            except Exception as e:
+            except Exception:
                 await self._report_log(
                     member, "error", f"Cannot mute {member} in channel before kicking."
                 )
@@ -136,7 +136,7 @@ class Core(commands.Cog):
             perms = self._mute_or_unmute_user(channel, member, True)
             try:
                 await channel.edit(overwrites=perms)
-            except Exception as e:
+            except Exception:
                 await self._report_log(
                     member, "error", f"Cannot unmute {member} in channel after kicking."
                 )
@@ -201,10 +201,10 @@ class Core(commands.Cog):
             )
             + reason,
             "failed": bold(f"\N{WOMANS BOOTS} {member} got kicked: ") + reason,
-            "unknow": bold(f"Unknow report for {member}: ") + reason,
+            "unknown": bold(f"Unknown report for {member}: ") + reason,
         }
         if level not in level_list:
-            level = "unknow"
+            level = "unknown"
         channel = await self._get_log_channel(member)
         if channel:
             message = level_list[level]
@@ -212,7 +212,7 @@ class Core(commands.Cog):
 
     async def _get_log_channel(self, member: discord.Member):
         if member.id in self._cache:
-            channel = self._cache[member.id]
+            return self._cache[member.id]
         channel_id = await self.data.guild(member.guild).logs_channel()
         channel = self.bot.get_channel(channel_id)
         self._cache[member.id] = channel_id
@@ -242,7 +242,7 @@ class Core(commands.Cog):
             await self._report_log(member, "error", f"Unable to kick {member}.")
 
     async def _permissions_checker(self, channel: discord.TextChannel):
-        # Doit avoit - manage_messages, manage_roles, read_messages
+        # Doit avoir - manage_messages, manage_roles, read_messages
         me = channel.guild.me
         message = ""
         issues = 0

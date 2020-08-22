@@ -1,4 +1,3 @@
-import asyncio
 import random
 from typing import Optional
 
@@ -13,7 +12,7 @@ from redbot.core.utils.chat_formatting import humanize_list
 class Core(commands.Cog):
 
     __author__ = ["Predeactor"]
-    __version__ = "v1.0.3"
+    __version__ = "v1.0.4"
 
     def __init__(self, bot: Red):
         self.bot = bot
@@ -42,7 +41,7 @@ class Core(commands.Cog):
         return cleverbot_session
 
     async def _ask_question(
-        self, session, question: str, user_id: Optional[int] = None
+            self, session, question: str, user_id: Optional[int] = None
     ):
         try:
             answer = await session.ask(
@@ -81,10 +80,10 @@ class Core(commands.Cog):
         await ctx.bot.set_shared_api_tokens("travitia", api_key=api_key)
         try:
             await ctx.message.delete()
-        except Exception:
+        except (discord.Forbidden, discord.HTTPException):
             await ctx.send(
                 "Please delete your message, token is sensitive and should be"
-                " keeped secret."
+                " kept secret."
             )
         await ctx.send("API key for `travitia` registered.")
 
@@ -97,7 +96,7 @@ def apicheck():
     """
         Check for hidding commands if the API key is not registered.
         Taken from https://github.com/PredaaA/predacogs/blob/master/nsfw/core.py#L200
-        Thank Preda.
+        Thanks Preda.
     """
 
     async def predicate(ctx: commands.Context):

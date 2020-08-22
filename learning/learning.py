@@ -100,7 +100,8 @@ class Learning(commands.Cog):
         Let's learn how to use variables."""
         if await self.data.user(ctx.author).lvl2() is False:
             await ctx.send(
-                "Uh oh, seem you didn't even completed the level 1. I won't let you learn variables if you don't know how to launch Python."
+                "Uh oh, seem you didn't even completed the level 1. I won't let you learn variables if you don't know "
+                "how to launch Python. "
             )
             return
         datas_list = plvl2()

@@ -23,7 +23,8 @@ class Coronavirus(commands.Cog):
         cases = confirmed - recovered - deaths
 
         await ctx.send(
-            "**Coronavirus Stats**\n\nTotal infected: {}\nTotal recovered: {}\nTotal death: {}\n\nActual existing cases: {}".format(
+            "**Coronavirus Stats**\n\nTotal infected: {}\nTotal recovered: {}\nTotal death: {}\n\nActual existing "
+            "cases: {}".format(
                 confirmed, recovered, deaths, cases
             )
         )

@@ -1,6 +1,5 @@
 import math
 import operator
-import time
 
 import discord
 
@@ -17,7 +16,7 @@ class LeaderBoard(commands.Cog):
     """
 
     __author__ = ["Predeactor"]
-    __version__ = "v1.0"
+    __version__ = "v1.0.2"
 
     async def red_delete_data_for_user(
         self,
@@ -83,11 +82,11 @@ class LeaderBoard(commands.Cog):
 
         await ctx.send(
             "**{receiver} received a reputation point from {author}!\nYou now"
-            " have {reps} reputation point{plurial}.**".format(
+            " have {reps} reputation point{plural}.**".format(
                 receiver=await self._user_mention(user),
                 author=ctx.author,
                 reps=user_points + 1,
-                plurial="s" if (user_points + 1) > 1 else "",
+                plural="s" if (user_points + 1) > 1 else "",
             )
         )
 
@@ -106,7 +105,7 @@ class LeaderBoard(commands.Cog):
         title = "Global Rep Leaderboard for {}\n".format(self.bot.user.name)
         all_users = await self.data.all_users()
         if str(all_users) == "{}":
-            await ctx.send("The leaderboard is empty... Nobody's popular ¯\_(ツ)_/¯")
+            await ctx.send("The leaderboard is empty... Nobody's popular, for now.")
             return
         for user_id in all_users:
             user_name = await self._get_user(user_id)
@@ -183,5 +182,5 @@ class LeaderBoard(commands.Cog):
             try:
                 user = self.bot.fetch_user(user_id)
             except (discord.NotFound, discord.HTTPException):
-                return "Unknow User"
+                return "Unknown User"
         return user.name

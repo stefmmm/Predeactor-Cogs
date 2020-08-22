@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import sys
 
 import discord
 from redbot.core import checks, commands
@@ -156,8 +155,10 @@ class Captcher(Core):
     @config.command()
     async def autoconfig(self, ctx: commands.Context):
         """Automatically set Captcher."""
-        await ctx.send("Autoconfig disabled by cog.")
+        await ctx.send("Autoconfig is disable to avoid trouble with your server.")
         return
+        # noinspection PyUnreachableCode
+        # For now, this code will be reachable after being considered as safe to use.
         await ctx.send(
             "This command will:\n"
             "- Create a new role called: Unverified\n"

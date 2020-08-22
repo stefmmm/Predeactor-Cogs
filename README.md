@@ -15,16 +15,16 @@ This is a repo made for [Red](https://github.com/Cog-Creators/Red-DiscordBot).
 | Cog Name       | Description                                           | Version    |
 | -------------- | ----------------------------------------------------- | ---------- |
 | Coronavirus    | Get stats about the Coronavirus.                      | Finished   |
-| CleverBot      | Talk or ask a question to CleverBot for free.         | v1.0.2     |
-| LeaderBoard    | Global reputation system using points.                | v1.0       |
-| CustomCooldown | Custom slowmode/cooldown moderated by the bot itself. | v1.2       |
+| CleverBot      | Talk or ask a question to CleverBot for free.         | v1.0.4     |
+| LeaderBoard    | Global reputation system using points.                | v1.0.2     |
+| CustomCooldown | Custom slowmode/cooldown moderated by the bot itself. | v1.3.2     |
 
 ## Hidden cogs
 
-| Cog Name     | Description                                          | Version    | Reason       |
-| ------------ | ---------------------------------------------------- | ---------- | ------------ |
-| Learning     | Receive some tutorials about Python.                 | EoL        | End of life  |
-| Captcher     | Captcha cog.                                         | Alpha 0.3  | Being worked |
+| Cog Name     | Description                                          | Version       | Reason       |
+| ------------ | ---------------------------------------------------- | ------------- | ------------ |
+| Learning     | Receive some tutorials about Python.                 | EoL           | End of life  |
+| Captcher     | Captcha cog.                                         | Alpha 0.4-dev | Being worked |
 
 ## Support
 
@@ -39,5 +39,5 @@ If you're having any important(s) issue(s), open an issue or pull request to thi
 
 ## Credits (AKA. Awesome peoples)
 
-* `Leaderboard Cog` : **fixator10** for the repboard command logic.
+* `Leaderboard` : **Fixator10** for the repboard command logic.
 * `CustomCooldown` : **jacob** as the original requester who allowed me to push the cog to my repo and **Maaz** as the original code creator.
