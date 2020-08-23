@@ -349,7 +349,7 @@ class Core(commands.Cog):
 
     @staticmethod
     def _make_staff_overwrites(
-            mods: list, admins: list, me: discord.Member, default: discord.Role
+        mods: list, admins: list, me: discord.Member, default: discord.Role
     ):
         data = {}
         for admin in admins:
@@ -366,7 +366,7 @@ class Core(commands.Cog):
 
     @staticmethod
     def _mute_or_unmute_user(
-            channel: discord.TextChannel, user: discord.Member, option: bool
+        channel: discord.TextChannel, user: discord.Member, option: bool
     ):
         actual_perm = channel.overwrites
         actual_perm[user] = discord.PermissionOverwrite(send_messages=option)
