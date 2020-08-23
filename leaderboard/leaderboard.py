@@ -4,9 +4,9 @@ import operator
 import discord
 
 from typing import Literal
-from redbot.core import Config, checks, commands
+from redbot.core import Config, commands
 from redbot.core.utils import AsyncIter
-from redbot.core.utils.chat_formatting import box, humanize_list, pagify
+from redbot.core.utils.chat_formatting import box, humanize_list
 
 
 class LeaderBoard(commands.Cog):
@@ -31,6 +31,7 @@ class LeaderBoard(commands.Cog):
         self.bot = bot
         self.data = Config.get_conf(self, identifier=82466655781)
         self.data.register_user(points=0, mention=True)
+        super(LeaderBoard, self).__init__()
 
     def format_help_for_context(self, ctx: commands.Context) -> str:
         """Thanks Sinbad!"""

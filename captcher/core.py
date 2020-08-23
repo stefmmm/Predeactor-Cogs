@@ -60,7 +60,8 @@ class Core(commands.Cog):
             version=self.__version__,
         )
 
-    def _generate_code_and_image(self):
+    @staticmethod
+    def _generate_code_and_image():
         """Return the generated code with the generated image."""
         code = str(randint(10000, 99999))  # Cannot start with leading 0...
         # fonts = [f for f in listdir(self.path) if isfile(join(self.path, f))]
@@ -123,7 +124,7 @@ class Core(commands.Cog):
             perms = self._mute_or_unmute_user(channel, member, False)
             try:
                 await channel.edit(overwrites=perms)
-            except Exception:
+            except (discord.HTTPException, discord.Forbidden):
                 await self._report_log(
                     member, "error", f"Cannot mute {member} in channel before kicking."
                 )
@@ -138,7 +139,7 @@ class Core(commands.Cog):
             perms = self._mute_or_unmute_user(channel, member, True)
             try:
                 await channel.edit(overwrites=perms)
-            except Exception:
+            except (discord.HTTPException, discord.Forbidden):
                 await self._report_log(
                     member, "error", f"Cannot unmute {member} in channel after kicking."
                 )
@@ -285,7 +286,8 @@ class Core(commands.Cog):
             await self.data.guild(channel.guild).active.set(False)
         return passed, final
 
-    async def _role_keeper(self, member: discord.Member):
+    @staticmethod
+    def _role_keeper(member: discord.Member):
         roles = member.roles[-1:0:-1]
         lister = []
         if roles:
@@ -293,13 +295,15 @@ class Core(commands.Cog):
                 lister.append(role)
         return lister or None
 
-    async def _roles_remover(self, member: discord.Member):
+    @staticmethod
+    async def _roles_remover(member: discord.Member):
         roles = member.roles[-1:0:-1]
         if roles:
             for role in roles:
                 await member.remove_roles(role)
 
-    async def _add_role(self, member: discord.Member, role_list: list):
+    @staticmethod
+    async def _add_role(member: discord.Member, role_list: list):
         for role in role_list:
             await member.add_roles(role)
 
@@ -343,8 +347,9 @@ class Core(commands.Cog):
             await self.data.guild(ctx.guild).logs_channel.set(logs.id)
             await self.data.guild(ctx.guild).temp_role.set(role.id)
 
+    @staticmethod
     def _make_staff_overwrites(
-        self, mods: list, admins: list, me: discord.Member, default: discord.Role
+            mods: list, admins: list, me: discord.Member, default: discord.Role
     ):
         data = {}
         for admin in admins:
@@ -359,8 +364,9 @@ class Core(commands.Cog):
         data[me] = discord.PermissionOverwrite(read_messages=True, send_messages=True)
         return data
 
+    @staticmethod
     def _mute_or_unmute_user(
-        self, channel: discord.TextChannel, user: discord.Member, option: bool
+            channel: discord.TextChannel, user: discord.Member, option: bool
     ):
         actual_perm = channel.overwrites
         actual_perm[user] = discord.PermissionOverwrite(send_messages=option)

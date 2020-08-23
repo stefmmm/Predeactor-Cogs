@@ -34,7 +34,7 @@ class CustomCooldown(commands.Cog):
     """
 
     __author__ = ["Maaz", "Predeactor"]
-    __version__ = "v1.3"
+    __version__ = "v1.3.3"
 
     async def red_delete_data_for_user(
         self,
@@ -43,7 +43,7 @@ class CustomCooldown(commands.Cog):
         user_id: int,
     ):
         for guild in self.bot.guilds:
-            if requester in ("owner", "uesr_strict", "discord_deleted_user"):
+            if requester in ("owner", "user_strict", "discord_deleted_user"):
                 async with self.config.guild(guild).ignore_users() as iu:
                     if user_id in iu:
                         iu.remove(user_id)
@@ -63,6 +63,7 @@ class CustomCooldown(commands.Cog):
         )
         self.date_format = "%d-%m-%Y:%H-%M-%S"
         self.dmed = []
+        super(CustomCooldown, self).__init__()
 
     def format_help_for_context(self, ctx: commands.Context) -> str:
         """Thanks Sinbad!"""
@@ -73,7 +74,7 @@ class CustomCooldown(commands.Cog):
             version=self.__version__,
         )
 
-    # Hadling Functions
+    # Handling Functions
 
     async def _handle_channel_cooldown(self, message, cooldown_channels, send_dm):
         now = datetime.now()
@@ -403,7 +404,7 @@ class CustomCooldown(commands.Cog):
         self, ctx: commands.Context, channel: discord.TextChannel, *, time: str
     ):
         """Edit a channel cooldown.
-        
+
         Time format can be the following:
         - `1 hour`
         - `1h`
@@ -540,7 +541,7 @@ class CustomCooldown(commands.Cog):
                 if user.id not in iu:
                     iu.append(user.id)
                 else:
-                    already_added.append(user)
+                    already_added.append(str(user))
         if len(is_bot) > 1:
             final_message += "Those users are bots and cannot be added: {bots}\n".format(
                 bots=humanize_list(is_bot)
@@ -796,21 +797,21 @@ class CustomCooldown(commands.Cog):
         ).cooldown_categories()
 
         categories_ids = []
-        catgories_channels = []
+        categories_channels = []
         for category_id in cooldown_categories:
             categories_ids.append(str(category_id))
         for category_id in categories_ids:
             for channels in cooldown_categories[category_id]["channels"]:
-                catgories_channels.append(str(channels))
+                categories_channels.append(str(channels))
         channel = message.channel
-        if str(channel.id) not in list(cooldown_channels.keys()) + catgories_channels:
+        if str(channel.id) not in list(cooldown_channels.keys()) + categories_channels:
             return
         send_dm = await self.config.guild(message.guild).send_dm()
         if str(channel.id) in cooldown_channels:
             await self._handle_channel_cooldown(
                 message, cooldown_channels, send_dm=send_dm
             )
-        if channel.category and str(channel.id) in catgories_channels:
+        if channel.category and str(channel.id) in categories_channels:
             await self._handle_category_cooldown(
                 message, cooldown_categories, send_dm=send_dm
             )
@@ -899,6 +900,8 @@ class CustomCooldown(commands.Cog):
                 "channel is registered as cooldowned, but I was unable to delete "
                 "the last message. I need the Manage messages permissions to "
                 "delete messages in this channel.\nThis message won't reappear "
-                "until the next bot reboot.".format(channel=channel.mention)
+                "until the next bot reboot or cog reload.".format(
+                    channel=channel.mention
+                )
             )
         self.dmed.append(owner.id)

@@ -40,9 +40,8 @@ class Core(commands.Cog):
         )
         return cleverbot_session
 
-    async def _ask_question(
-        self, session, question: str, user_id: Optional[int] = None
-    ):
+    @staticmethod
+    async def _ask_question(session, question: str, user_id: Optional[int] = None):
         try:
             answer = await session.ask(
                 question, user_id if user_id is not None else "00"
@@ -55,7 +54,8 @@ class Core(commands.Cog):
             answered = False
         return answer, answered
 
-    def _message_by_timeout(self):
+    @staticmethod
+    def _message_by_timeout():
         messages = [
             "5 minutes without messages ? Sorry but I have to close your conversation.",
             "Sorry but after 5 minutes, I close your conversation.",

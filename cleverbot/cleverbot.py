@@ -3,7 +3,7 @@ from datetime import datetime
 
 import discord
 
-from redbot.core import checks, commands
+from redbot.core import commands
 
 from .core import Core, apicheck
 

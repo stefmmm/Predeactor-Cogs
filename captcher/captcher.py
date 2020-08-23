@@ -3,7 +3,7 @@ import logging
 
 import discord
 from redbot.core import checks, commands
-from redbot.core.utils.chat_formatting import bold, box
+from redbot.core.utils.chat_formatting import box
 from redbot.core.utils.predicates import MessagePredicate
 
 from .core import Core
@@ -244,7 +244,7 @@ class Captcher(Core):
             return
         method = roles_methods[user_message.content]
         if method == "all":
-            roles = await self._role_keeper(user)
+            roles = self._role_keeper(user)
             await self._roles_remover(user)
         elif method == "configured":
             role_conf = await self.data.guild(ctx.author.guild).giverole()

@@ -7,6 +7,7 @@ from redbot.core import commands
 class Coronavirus(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        super(Coronavirus, self).__init__()
 
     @commands.command()
     async def coronavirusstats(self, ctx):
