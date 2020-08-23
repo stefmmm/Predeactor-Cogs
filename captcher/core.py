@@ -2,6 +2,7 @@ import asyncio
 import contextlib
 import datetime
 import logging
+
 # from os import listdir
 # from os.path import isfile, join
 import time
@@ -15,6 +16,7 @@ from redbot.core.bot import Red
 # from redbot.core.data_manager import bundled_data_path
 from redbot.core.utils.chat_formatting import bold, error, humanize_list, info
 from redbot.core.utils.predicates import MessagePredicate
+
 # from PIL import ImageFont
 
 log = logging.getLogger("predeactor.captcher")

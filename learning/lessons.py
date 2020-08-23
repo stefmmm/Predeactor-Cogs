@@ -46,17 +46,17 @@ def plvl1():
         "https://www.python.org/downloads/.\nNot on Windows? Using Linux? You can use the command `sudo apt-get "
         "install python3`.",
         20,
-        '```My First Command```\nNow that you installed Python, let\'s start with your first command!\nWe\'re gonna '
-        'start Python, the easiest way is, opening your terminal and typing `python`\n\n```I\'m sorry but I don\'t '
-        'know what is a terminal...```\nNo worry, everyone start somewhere! You can take a look at this : '
-        'https://askubuntu.com/a/38220.\nReady? You should see something like this : \n```python\nPython 3.X.X (Some '
+        "```My First Command```\nNow that you installed Python, let's start with your first command!\nWe're gonna "
+        "start Python, the easiest way is, opening your terminal and typing `python`\n\n```I'm sorry but I don't "
+        "know what is a terminal...```\nNo worry, everyone start somewhere! You can take a look at this : "
+        "https://askubuntu.com/a/38220.\nReady? You should see something like this : \n```python\nPython 3.X.X (Some "
         'informations)\nType "help", "copyright", "credits" or "license" for more information.\n>>>```\nWelcome to '
-        'your Python Interpreter, where you can test codes, and where `>>>` will be your command.\nNow that we '
+        "your Python Interpreter, where you can test codes, and where `>>>` will be your command.\nNow that we "
         'started Python, we\'re gonna show something in this empty terminal. Type `print("My super text")`, '
-        'done? Hit Enter and WOAH! You just showed your super text into your terminal using a function, but what is a '
-        'function? I will tell you later ;)\n\nYou made it! You succesfully launched Python and ran your first '
-        'command, in the next lesson, we will talk about variable, those magic things!\n\n*Nb: To close your Python '
-        'interpreter, just close the window or type `exit()` ;)*',
+        "done? Hit Enter and WOAH! You just showed your super text into your terminal using a function, but what is a "
+        "function? I will tell you later ;)\n\nYou made it! You succesfully launched Python and ran your first "
+        "command, in the next lesson, we will talk about variable, those magic things!\n\n*Nb: To close your Python "
+        "interpreter, just close the window or type `exit()` ;)*",
     ]
     return lvl1_list
 
@@ -74,7 +74,7 @@ def plvl2():
         30,
         "Now, you want to make your first variable, but how ? We use the `=` sign to define the variable. Start your "
         "Python interpreter. We're gonna start by defining what the sound of the dog, the dog's sound is \"Waf!\", "
-        "maybe not, but that's just an example...\n\nNow type `dog_sound = \"Waf\"`, here, we define the variable "
+        'maybe not, but that\'s just an example...\n\nNow type `dog_sound = "Waf"`, here, we define the variable '
         "dog_sound to \"Waf\", you're maybe wondering why we're using double quotes, that's because we define a "
         "*string*, if we don't, we're defining a variable inside a variable, it can be useful sometime, but defining "
         "a variable of a variable is useless.\n\nNow that we have our variable, we want to show it, right? Let's type "

@@ -41,7 +41,7 @@ class Core(commands.Cog):
         return cleverbot_session
 
     async def _ask_question(
-            self, session, question: str, user_id: Optional[int] = None
+        self, session, question: str, user_id: Optional[int] = None
     ):
         try:
             answer = await session.ask(

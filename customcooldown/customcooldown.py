@@ -17,10 +17,14 @@ from redbot.core.utils.chat_formatting import (
 )
 from redbot.core.utils.predicates import MessagePredicate
 
-default_channel_message = "Sorry {member}, this channel is ratelimited! You'll be able to post again in {channel} in " \
-                          "{time}. "
-default_category_message = "Sorry {member}, this category is ratelimited! You'll be able to post again in {category} " \
-                           "in {time}. "
+default_channel_message = (
+    "Sorry {member}, this channel is ratelimited! You'll be able to post again in {channel} in "
+    "{time}. "
+)
+default_category_message = (
+    "Sorry {member}, this category is ratelimited! You'll be able to post again in {category} "
+    "in {time}. "
+)
 
 
 class CustomCooldown(commands.Cog):
@@ -231,6 +235,10 @@ class CustomCooldown(commands.Cog):
         - `1 hour 5 minutes`
         - `2h30m10s`
         """
+        if not category.permissions_for(ctx.me).manage_messages:
+            await ctx.send(
+                "I require the 'Manage messages' permission to let you use this command."
+            )
         cooldown_categories = await self.config.guild(ctx.guild).cooldown_categories()
         if str(category.id) in cooldown_categories:
             await ctx.send(
@@ -240,7 +248,7 @@ class CustomCooldown(commands.Cog):
                 )
             )
             return
-        time = await self._return_time(time)
+        time = self._return_time(time)
         if time:
             await self._update_category_data(ctx, category, time)
             await ctx.send(
@@ -272,7 +280,7 @@ class CustomCooldown(commands.Cog):
                 "{category} does not have cooldown.".format(category=category.name)
             )
             return
-        time = await self._return_time(time)
+        time = self._return_time(time)
         if time:
             await self._update_category_data(ctx, category, time)
             await ctx.send(
@@ -366,8 +374,12 @@ class CustomCooldown(commands.Cog):
         - `1 hour 5 minutes`
         - `2h30m10s`
         """
-        cooldown_channels = await self.config.guild(ctx.guild).cooldown_channels()
-        if str(channel.id) in cooldown_channels:
+        if not channel.permissions_for(ctx.me).manage_messages:
+            await ctx.send(
+                "I require the 'Manage messages' permission to let you use this command."
+            )
+            return
+        if str(channel.id) in await self.config.guild(ctx.guild).cooldown_channels():
             await ctx.send(
                 "This channel is already added to the cooldown. If you want to edit"
                 " the cooldown time, use `{prefix}slow channel edit`.".format(
@@ -375,16 +387,16 @@ class CustomCooldown(commands.Cog):
                 )
             )
             return
-        time = await self._return_time(time)
-        if time:
-            await self._update_channel_data(ctx, channel, time)
-            await ctx.send(
-                "{channel} is now set at 1 message every {time} seconds.".format(
-                    channel=channel.mention, time=time
-                )
-            )
-        else:
+        time = self._return_time(time)
+        if not time:
             await ctx.send("Your time is not correct to me.")
+            return
+        await self._update_channel_data(ctx, channel, time)
+        await ctx.send(
+            "{channel} is now set at 1 message every {time} seconds.".format(
+                channel=channel.mention, time=time
+            )
+        )
 
     @slowchannel.command(name="edit")
     async def editchannel(
@@ -398,23 +410,21 @@ class CustomCooldown(commands.Cog):
         - `1 hour 5 minutes`
         - `2h30m10s`
         """
-        cooldown_channels = await self.config.guild(ctx.guild).cooldown_channels()
-        if str(channel.id) in cooldown_channels:
-            time = await self._return_time(time)
+        if str(channel.id) in await self.config.guild(ctx.guild).cooldown_channels():
+            time = self._return_time(time)
         else:
             await ctx.send(
                 "{channel} does not have cooldown.".format(channel=channel.mention)
             )
             return
-        if time:
-            await self._update_channel_data(ctx, channel, time)
-            await ctx.send(
-                "{channel} is now set at 1 message every {time} seconds.".format(
-                    channel=channel.mention, time=time
-                )
-            )
-        else:
+        if not time:
             await ctx.send("Your time is not correct to me.")
+        await self._update_channel_data(ctx, channel, time)
+        await ctx.send(
+            "{channel} is now set at 1 message every {time} seconds.".format(
+                channel=channel.mention, time=time
+            )
+        )
 
     @slowchannel.command(name="delete", aliases=["remove", "del"])
     async def deletechannel(
@@ -865,7 +875,7 @@ class CustomCooldown(commands.Cog):
                 return
 
     @staticmethod
-    async def _return_time(time):
+    def _return_time(time):
         cooldown_time = parse_timedelta(time)
         if cooldown_time is None:
             return None
