@@ -3,8 +3,8 @@ import contextlib
 import datetime
 import logging
 
-# from os import listdir
-# from os.path import isfile, join
+from os import listdir
+from os.path import isfile, join
 import time
 from random import randint
 
@@ -13,11 +13,9 @@ from captcha.image import ImageCaptcha
 from redbot.core import Config, commands, modlog
 from redbot.core.bot import Red
 
-# from redbot.core.data_manager import bundled_data_path
+from redbot.core.data_manager import bundled_data_path
 from redbot.core.utils.chat_formatting import bold, error, humanize_list, info
 from redbot.core.utils.predicates import MessagePredicate
-
-# from PIL import ImageFont
 
 log = logging.getLogger("predeactor.captcher")
 log.setLevel(logging.DEBUG)
@@ -38,10 +36,10 @@ class Core(commands.Cog):
             logs_channel=None,
             temp_role=None,
         )
-        # self.path = bundled_data_path(self)
+        self.path = bundled_data_path(self)
         self._cache = {}
         self._init_logger()
-        super().__init__()
+        super(Core, self).__init__()
 
     def _init_logger(self):
         log_format = logging.Formatter(
@@ -60,15 +58,14 @@ class Core(commands.Cog):
             version=self.__version__,
         )
 
-    @staticmethod
-    def _generate_code_and_image():
+    def _generate_code_and_image(self):
         """Return the generated code with the generated image."""
         code = str(randint(10000, 99999))  # Cannot start with leading 0...
-        # fonts = [f for f in listdir(self.path) if isfile(join(self.path, f))]
+        file_fonts = [f"{self.path}/" + f for f in listdir(self.path) if isfile(join(self.path, f))]
         return (
             code,
-            ImageCaptcha().generate(code),
-        )  # I got an OSError if I use custom fonts
+            ImageCaptcha(fonts=file_fonts).generate(code),
+        )
 
     async def _challenge(
         self, member: discord.Member, channel: discord.TextChannel, start_reason: str
