@@ -61,7 +61,11 @@ class Core(commands.Cog):
     def _generate_code_and_image(self):
         """Return the generated code with the generated image."""
         code = str(randint(10000, 99999))  # Cannot start with leading 0...
-        file_fonts = [f"{self.path}/" + f for f in listdir(self.path) if isfile(join(self.path, f))]
+        file_fonts = [
+            f"{self.path}/" + f
+            for f in listdir(self.path)
+            if isfile(join(self.path, f))
+        ]
         return (
             code,
             ImageCaptcha(fonts=file_fonts).generate(code),
