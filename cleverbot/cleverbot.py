@@ -18,8 +18,8 @@ class CleverBot(Core):
     @commands.cooldown(1, 3, commands.BucketType.user)
     async def ask(self, ctx: commands.Context, *, question: str):
         """Ask an unique question to Cleverbot.
-        
-        You won't have a discussion with Cleverbot, you're just 
+
+        You won't have a discussion with Cleverbot, you're just
         asking a single question."""
         async with ctx.typing():
             session = await self._make_cleverbot_session()

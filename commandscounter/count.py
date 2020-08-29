@@ -86,6 +86,6 @@ class CommandsCounter(commands.Cog):
         user_id: int,
     ):
         """
-            Nothing to do here...
+        Nothing to do here...
         """
         pass

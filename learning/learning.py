@@ -11,7 +11,7 @@ from .lessons import *
 class Learning(commands.Cog):
 
     """This cog is made for learning the Python basics and how to make your own cog on Red.
-    
+
     Cog has reached EoL (End of Life), it mean that I won't give support, enhancement,
      new lessons or anything else to this cog. However, you can open a pull request
      and do change by yourself."""
@@ -75,7 +75,7 @@ class Learning(commands.Cog):
     @lpy.command(name="level1")
     async def lv1(self, ctx: commands.Context):
         """Start level 1.
-        
+
         Let's learn how to install Python and run it."""
         if await self.data.user(ctx.author).lvl1() is False:
             await ctx.send("Please read the introduction first of all.")
@@ -96,7 +96,7 @@ class Learning(commands.Cog):
     @lpy.command(name="level2")
     async def lv2(self, ctx: commands.Context):
         """Start the level 2.
-        
+
         Let's learn how to use variables."""
         if await self.data.user(ctx.author).lvl2() is False:
             await ctx.send(

@@ -70,7 +70,7 @@ class Core(commands.Cog):
     @commands.command(name="settraviliaapikey")
     async def travaitiaapikey(self, ctx: commands.Context, api_key: str):
         """Set the API key for Travitia API.
-        
+
         To set the API key:
         1. Go to [this server](https://discord.gg/s4fNByu).
         2. Go to #playground and use `> api`.
@@ -94,9 +94,9 @@ class Core(commands.Cog):
 
 def apicheck():
     """
-        Check for hidding commands if the API key is not registered.
-        Taken from https://github.com/PredaaA/predacogs/blob/master/nsfw/core.py#L200
-        Thanks Preda.
+    Check for hidding commands if the API key is not registered.
+    Taken from https://github.com/PredaaA/predacogs/blob/master/nsfw/core.py#L200
+    Thanks Preda.
     """
 
     async def predicate(ctx: commands.Context):

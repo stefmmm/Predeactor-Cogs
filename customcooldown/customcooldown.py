@@ -229,7 +229,7 @@ class CustomCooldown(commands.Cog):
         self, ctx: commands.Context, category: discord.CategoryChannel, *, time: str
     ):
         """Add a category cooldown.
-        
+
         Time format can be the following:
         - `1 hour`
         - `1h`
@@ -268,7 +268,7 @@ class CustomCooldown(commands.Cog):
         self, ctx: commands.Context, category: discord.CategoryChannel, *, time: str
     ):
         """Edit a category cooldown.
-        
+
         Time format can be the following:
         - `1 hour`
         - `1h`
@@ -368,7 +368,7 @@ class CustomCooldown(commands.Cog):
         self, ctx: commands.Context, channel: discord.TextChannel, *, time: str
     ):
         """Add a channel cooldown.
-        
+
         Time format can be the following:
         - `1 hour`
         - `1h`
@@ -543,8 +543,10 @@ class CustomCooldown(commands.Cog):
                 else:
                     already_added.append(str(user))
         if len(is_bot) > 1:
-            final_message += "Those users are bots and cannot be added: {bots}\n".format(
-                bots=humanize_list(is_bot)
+            final_message += (
+                "Those users are bots and cannot be added: {bots}\n".format(
+                    bots=humanize_list(is_bot)
+                )
             )
         elif len(is_bot) == 1:
             final_message += "{bot} is a bot and cannot be added.\n".format(
@@ -666,7 +668,7 @@ class CustomCooldown(commands.Cog):
     @slowset.command()
     async def channelmessage(self, ctx: commands.Context, *, message: str = None):
         """Change the message to send to user when triggering channels cooldown.
-        
+
         Parameters:
         - `{time}` will be replaced with remaining cooldown time.
         - `{member}` will get replaced with member's name.
@@ -691,7 +693,7 @@ class CustomCooldown(commands.Cog):
     @slowset.command()
     async def categorymessage(self, ctx: commands.Context, *, message: str = None):
         """Change the message to send to user when triggering categories cooldown.
-        
+
         Parameters:
         - `{time}` will be replaced with remaining cooldown time.
         - `{member}` will get replaced with member's name.

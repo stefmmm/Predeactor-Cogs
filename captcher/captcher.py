@@ -47,7 +47,7 @@ class Captcher(Core):
         self, ctx: commands.Context, temporary_role: discord.Role = None
     ):
         """
-        Role to give when someone join, it will be automatically removed after 
+        Role to give when someone join, it will be automatically removed after
         passing captcha.
 
         If a role is already set and you don't provide a role, actual role will
@@ -55,8 +55,10 @@ class Captcher(Core):
         """
         if temporary_role:
             await self.data.guild(ctx.guild).temp_role.set(temporary_role.id)
-            message = "{role.name} will be given when members start the captcha.".format(
-                role=temporary_role
+            message = (
+                "{role.name} will be given when members start the captcha.".format(
+                    role=temporary_role
+                )
             )
         elif temporary_role is None and await self.data.guild(ctx.guild).temp_role():
             await self.data.guild(ctx.guild).temp_role.clear()
@@ -98,7 +100,7 @@ class Captcher(Core):
         self, ctx: commands.Context, channel: discord.TextChannel = None
     ):
         """
-        Set the log channel, really recommended for knowing who passed verification 
+        Set the log channel, really recommended for knowing who passed verification
         or who failed.
         """
         if channel:
@@ -267,7 +269,9 @@ class Captcher(Core):
             )
             return
         captched = await self._challenge(
-            user, channel, f"{user} challenged manually by {ctx.author}.",
+            user,
+            channel,
+            f"{user} challenged manually by {ctx.author}.",
         )
         if method == "all" and captched and roles:
             await self._add_role(user, roles)

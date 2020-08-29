@@ -98,7 +98,9 @@ class Core(commands.Cog):
             log.warning(
                 "Bot was strictly unable to send a message in channel: {name} for ID "
                 "{id} in server {server}.".format(
-                    name=channel.name, id=channel.id, server=channel.guild,
+                    name=channel.name,
+                    id=channel.id,
+                    server=channel.guild,
                 )
             )
             await self._report_log(
@@ -118,7 +120,9 @@ class Core(commands.Cog):
             else:
                 to_log = "Unable to give and remove roles."
             await self._report_log(
-                member, "completed", to_log,
+                member,
+                "completed",
+                to_log,
             )
             failed = False
         else:
@@ -251,8 +255,10 @@ class Core(commands.Cog):
         message = ""
         issues = 0
         if not channel.permissions_for(me).read_messages:
-            message += "I require the Read Messages permission in {name} to work.\n".format(
-                name=channel.name
+            message += (
+                "I require the Read Messages permission in {name} to work.\n".format(
+                    name=channel.name
+                )
             )
             issues += 1
             passed = False
