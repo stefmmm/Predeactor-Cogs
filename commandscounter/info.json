@@ -1,7 +1,9 @@
 {
-    "author": ["Predeactor"],
+    "author": [
+        "Predeactor"
+    ],
     "end_user_data_statement": "This cog does not save data about users persistently.",
     "description": "Know how many time a command has been used.",
     "short": "Commands counter statistics",
-    "install_msg": "Thank for installing my CommandsCounter cog.",
+    "install_msg": "Thank for installing my CommandsCounter cog."
 }
