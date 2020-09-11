@@ -30,6 +30,24 @@ class Captcher(Core):
         be deleted.
         """
         if role_to_give:
+            if ctx.author.top_role < role_to_give:
+                await ctx.send(
+                    (
+                        "This role is higher than your highest role in the role "
+                        "hierarchy, choose another role, ask someone else to use this "
+                        "command, or get a higher role."
+                    )
+                )
+                return
+            if ctx.me.top_role < role_to_give:
+                await ctx.send(
+                    (
+                        "This role is higher than my highest role in the hierarchy, "
+                        "give me an another role, put my role higher or put the role "
+                        "lower."
+                    )
+                )
+                return
             await self.data.guild(ctx.guild).giverole.set(role_to_give.id)
             message = "{role.name} will be given when members pass the captcha.".format(
                 role=role_to_give
@@ -54,6 +72,24 @@ class Captcher(Core):
         be deleted.
         """
         if temporary_role:
+            if ctx.author.top_role < role_to_give:
+                await ctx.send(
+                    (
+                        "This role is higher than your highest role in the role "
+                        "hierarchy, choose another role, ask someone else to use this "
+                        "command, or get a higher role."
+                    )
+                )
+                return
+            if ctx.me.top_role < role_to_give:
+                await ctx.send(
+                    (
+                        "This role is higher than my highest role in the hierarchy, "
+                        "give me an another role, put my role higher or put the role "
+                        "lower."
+                    )
+                )
+                return
             await self.data.guild(ctx.guild).temp_role.set(temporary_role.id)
             message = (
                 "{role.name} will be given when members start the captcha.".format(
