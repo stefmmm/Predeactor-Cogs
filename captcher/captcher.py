@@ -72,7 +72,7 @@ class Captcher(Core):
         be deleted.
         """
         if temporary_role:
-            if ctx.author.top_role < role_to_give:
+            if ctx.author.top_role < temporary_role:
                 await ctx.send(
                     (
                         "This role is higher than your highest role in the role "
@@ -81,7 +81,7 @@ class Captcher(Core):
                     )
                 )
                 return
-            if ctx.me.top_role < role_to_give:
+            if ctx.me.top_role < temporary_role:
                 await ctx.send(
                     (
                         "This role is higher than my highest role in the hierarchy, "
