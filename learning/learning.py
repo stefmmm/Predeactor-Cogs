@@ -21,10 +21,10 @@ class Learning(commands.Cog):
     __version__ = "Last - EoL"
 
     async def red_delete_data_for_user(
-            self,
-            *,
-            requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
-            user_id: int,
+        self,
+        *,
+        requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
+        user_id: int,
     ):
         if requester is not "user":
             await self.data.user_from_id(user_id).clear()

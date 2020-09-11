@@ -28,12 +28,13 @@ class Core(commands.Cog):
     __version__ = "Alpha 0.4-dev"
 
     async def red_delete_data_for_user(
-            self,
-            *,
-            requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
-            user_id: int,
+        self,
+        *,
+        requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
+        user_id: int,
     ):
         pass
+
     # Why just a pass? This cog assume that an user was here when code was trigger
     # and the cog will automatically remove anything about the user after some time.
     # (cache). And cache is automatically reset at cog reload/bot restart.

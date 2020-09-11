@@ -16,12 +16,13 @@ class Core(commands.Cog):
     __version__ = "v1.0.4"
 
     async def red_delete_data_for_user(
-            self,
-            *,
-            requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
-            user_id: int,
+        self,
+        *,
+        requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
+        user_id: int,
     ):
         pass
+
     # Nothing to delete, I assume that if the user was previously in self.conversation,
     # then it will automatically removed after cog reload/bot restart.
 
