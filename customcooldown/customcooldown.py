@@ -42,8 +42,8 @@ class CustomCooldown(commands.Cog):
         requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
         user_id: int,
     ):
-        for guild in self.bot.guilds:
-            if requester in ("owner", "user_strict", "discord_deleted_user"):
+        if requester in ("owner", "user_strict", "discord_deleted_user"):
+            for guild in self.bot.guilds:
                 async with self.config.guild(guild).ignore_users() as iu:
                     if user_id in iu:
                         iu.remove(user_id)

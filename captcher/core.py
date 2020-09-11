@@ -16,6 +16,7 @@ from redbot.core.bot import Red
 from redbot.core.data_manager import bundled_data_path
 from redbot.core.utils.chat_formatting import bold, error, humanize_list, info
 from redbot.core.utils.predicates import MessagePredicate
+from typing import Literal
 
 log = logging.getLogger("predeactor.captcher")
 log.setLevel(logging.DEBUG)
@@ -25,6 +26,17 @@ class Core(commands.Cog):
 
     __author__ = ["Predeactor"]
     __version__ = "Alpha 0.4-dev"
+
+    async def red_delete_data_for_user(
+            self,
+            *,
+            requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
+            user_id: int,
+    ):
+        pass
+    # Why just a pass? This cog assume that an user was here when code was trigger
+    # and the cog will automatically remove anything about the user after some time.
+    # (cache). And cache is automatically reset at cog reload/bot restart.
 
     def __init__(self, bot: Red):
         self.bot = bot

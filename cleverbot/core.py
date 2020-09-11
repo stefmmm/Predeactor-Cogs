@@ -7,12 +7,23 @@ import async_cleverbot as ac
 from redbot.core import checks, commands
 from redbot.core.bot import Red
 from redbot.core.utils.chat_formatting import humanize_list
+from typing import Literal
 
 
 class Core(commands.Cog):
 
     __author__ = ["Predeactor"]
     __version__ = "v1.0.4"
+
+    async def red_delete_data_for_user(
+            self,
+            *,
+            requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
+            user_id: int,
+    ):
+        pass
+    # Nothing to delete, I assume that if the user was previously in self.conversation,
+    # then it will automatically removed after cog reload/bot restart.
 
     def __init__(self, bot: Red):
         self.bot = bot

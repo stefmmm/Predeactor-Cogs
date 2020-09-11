@@ -2,9 +2,18 @@ import discord
 
 import aiohttp
 from redbot.core import commands
-
+from typing import Literal
 
 class Coronavirus(commands.Cog):
+
+    async def red_delete_data_for_user(
+            self,
+            *,
+            requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
+            user_id: int,
+    ):
+        pass
+
     def __init__(self, bot):
         self.bot = bot
         super(Coronavirus, self).__init__()

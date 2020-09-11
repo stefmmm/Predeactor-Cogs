@@ -4,6 +4,7 @@ import discord
 
 from redbot.core import Config, commands
 from redbot.core.utils.chat_formatting import humanize_list
+from typing import Literal
 
 from .lessons import *
 
@@ -18,6 +19,15 @@ class Learning(commands.Cog):
 
     __author__ = ["Predeactor"]
     __version__ = "Last - EoL"
+
+    async def red_delete_data_for_user(
+            self,
+            *,
+            requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
+            user_id: int,
+    ):
+        if requester is not "user":
+            await self.data.user_from_id(user_id).clear()
 
     def __init__(self, bot):
         self.bot = bot

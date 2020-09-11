@@ -10,6 +10,14 @@ class CommandsCounter(commands.Cog):
     __author__ = ["Predeactor"]
     __version__ = "v1"
 
+    async def red_delete_data_for_user(
+            self,
+            *,
+            requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
+            user_id: int,
+    ):
+        pass  # Nothing to delete.
+
     def __init__(self, bot):
         self.bot = bot
         self.commands = {}
