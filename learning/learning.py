@@ -2,11 +2,11 @@ import asyncio
 
 import discord
 
-from redbot.core import Config, commands
+from redbot.core import Config, commands, checks
 from redbot.core.utils.chat_formatting import humanize_list
 from typing import Literal
 
-from .lessons import *
+from .lessons import Lessons
 
 
 class Learning(commands.Cog):
@@ -34,7 +34,7 @@ class Learning(commands.Cog):
         self.data = Config.get_conf(self, identifier=495954054)
 
         self.data.register_user(lvl1=False, lvl2=False, lvl3=False)
-
+        self.lessons = Lessons()
         super().__init__()
 
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -47,6 +47,7 @@ class Learning(commands.Cog):
         )
 
     @commands.group(name="learningpython")
+    @checks.bot_has_permissions(embed_links=True)
     async def lpy(self, ctx: commands.GuildContext):
         """Here, you will learn the Python's basics."""
         pass
@@ -54,7 +55,7 @@ class Learning(commands.Cog):
     @lpy.command(name="introduction")
     async def intro(self, ctx: commands.Context):
         """Introduction first of all all."""
-        intro_list = pintro()
+        intro_list = self.lessons.pintro()
         for data in intro_list:
             if isinstance(data, int):
                 await asyncio.sleep(data)
@@ -70,7 +71,7 @@ class Learning(commands.Cog):
     @lpy.command(name="references")
     async def ref(self, ctx: commands.Context):
         """Some useful links to learn more on Python."""
-        refs_list = pref()
+        refs_list = self.lessons.pref()
         for data in refs_list:
             if isinstance(data, int):
                 await asyncio.sleep(data)
@@ -90,7 +91,7 @@ class Learning(commands.Cog):
         if await self.data.user(ctx.author).lvl1() is False:
             await ctx.send("Please read the introduction first of all.")
             return
-        datas_list = plvl1()
+        datas_list = self.lessons.plvl1()
         for data in datas_list:
             if isinstance(data, int):
                 await asyncio.sleep(data)
@@ -114,7 +115,7 @@ class Learning(commands.Cog):
                 "how to launch Python. "
             )
             return
-        datas_list = plvl2()
+        datas_list = self.lessons.plvl2()
         for data in datas_list:
             if isinstance(data, int):
                 await asyncio.sleep(data)
@@ -135,7 +136,7 @@ class Learning(commands.Cog):
         if await self.data.user(ctx.author).lvl3() is False:
             await ctx.send("Uh oh, seem you didn't even completed the level 2.")
             return
-        datas_list = plvl3()
+        datas_list = self.lessons.plvl3()
         for data in datas_list:
             if isinstance(data, int):
                 await asyncio.sleep(data)
