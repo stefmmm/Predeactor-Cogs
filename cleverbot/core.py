@@ -87,10 +87,6 @@ class Core(commands.Cog):
             )
         await ctx.send("API key for `travitia` registered.")
 
-    def cog_unload(self):
-        if self.conversation:
-            self.conversation = {}
-
 
 def apicheck():
     """
