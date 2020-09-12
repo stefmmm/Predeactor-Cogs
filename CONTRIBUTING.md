@@ -18,6 +18,14 @@ If you encounter a problem during the installation of a cog and/or during its us
 
 If you still can't solve your problem, open an issue.
 
+### Suggestions
+
+If your suggestion is related to a cog:
+- Open an issue and select `Feature request`
+- Explain your feature.
+
+If you want to request a suggestion for something else, feel free to contact me, you can join my [support server](https://discord.gg/zg6ydua) or contact me on Discord at `Capitaine Predeactor#0495` (Try to avoid random friend request).
+
 ### Feature Request
 
 Thank you for helping us to improve the repository, and thanks for your suggestions, our workings will be more in tune with the community and allow the improvement of them.
@@ -29,4 +37,5 @@ Thank you for helping us to improve the repository, and thanks for your suggesti
 If you plan to open a pull request, please check the following points:
 - Your code must be adapted with [Black](https://github.com/psf/black).
 - Your code must be tested beforehand and must work.
+- Check your code a second time to remove the useless (Unused variable, checks, etc...)
 - Your code should be as similar as possible to the cog's code.

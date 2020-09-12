@@ -131,7 +131,7 @@ class LeaderBoard(commands.Cog):
         page = 1
         per_page = 15
         pages = math.ceil(len(sorted_list) / per_page)
-        if page_list >= 1 and page_list <= pages:
+        if 1 <= page_list <= pages:
             page = page_list
         else:
             await ctx.send(
@@ -172,7 +172,8 @@ class LeaderBoard(commands.Cog):
 
         await ctx.send(embed=em)
 
-    async def _truncate_text(self, text, max_length):
+    @staticmethod
+    async def _truncate_text(text, max_length):
         if len(text) > max_length:
             return text[: max_length - 1] + "…"
         return text

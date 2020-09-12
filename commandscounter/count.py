@@ -1,4 +1,3 @@
-import discord
 from redbot.core import commands
 from redbot.core.utils.chat_formatting import inline, bold, pagify, humanize_list
 from typing import Literal
@@ -86,14 +85,3 @@ class CommandsCounter(commands.Cog):
                 self.commands[command]["error"] = 1
                 return
             self.commands[command]["error"] += 1
-
-    async def red_delete_data_for_user(
-        self,
-        *,
-        requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
-        user_id: int,
-    ):
-        """
-        Nothing to do here...
-        """
-        pass
