@@ -1,10 +1,9 @@
 import asyncio
+from typing import Literal
 
 import discord
-
-from redbot.core import Config, commands, checks
+from redbot.core import Config, checks, commands
 from redbot.core.utils.chat_formatting import humanize_list
-from typing import Literal
 
 from .lessons import Lessons
 

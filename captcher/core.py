@@ -1,21 +1,18 @@
 import asyncio
 from datetime import datetime
-
 from os import listdir
 from os.path import isfile, join
 from random import randint
-from typing import Optional, Union
+from typing import Literal, Optional, Union
 
 import discord
-from discord.utils import get
 from captcha.image import ImageCaptcha
+from discord.utils import get
 from redbot.core import Config, commands, modlog
 from redbot.core.bot import Red
-
 from redbot.core.data_manager import bundled_data_path
 from redbot.core.utils.chat_formatting import bold, error, humanize_list, info, inline
 from redbot.core.utils.predicates import MessagePredicate
-from typing import Literal
 
 
 class Core(commands.Cog):

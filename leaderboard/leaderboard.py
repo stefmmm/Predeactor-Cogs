@@ -1,9 +1,8 @@
 import math
 import operator
+from typing import Literal
 
 import discord
-
-from typing import Literal
 from redbot.core import Config, commands
 from redbot.core.utils import AsyncIter
 from redbot.core.utils.chat_formatting import box, humanize_list

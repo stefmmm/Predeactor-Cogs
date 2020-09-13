@@ -1,19 +1,18 @@
 import asyncio
+from contextlib import suppress as suppressor
 from datetime import datetime
 from typing import Literal
 
 import discord
-from contextlib import suppress as suppressor
-
 from redbot.core import Config, checks, commands
 from redbot.core.commands.converter import parse_timedelta
 from redbot.core.utils.chat_formatting import (
     bold,
+    box,
     humanize_list,
     humanize_timedelta,
     pagify,
     warning,
-    box,
 )
 from redbot.core.utils.predicates import MessagePredicate
 
