@@ -12,19 +12,19 @@ This is a repo made for [Red](https://github.com/Cog-Creators/Red-DiscordBot).
 
 ## Available cogs list
 
-| Cog Name        | Description                                           | Version    |
-| --------------- | ----------------------------------------------------- | ---------- |
-| CleverBot       | Talk or ask a question to CleverBot for free.         | v1.0.4     |
-| LeaderBoard     | Global reputation system using points.                | v1.0.2     |
-| CustomCooldown  | Custom slowmode/cooldown moderated by the bot itself. | v1.3.3     |
-| CommandsCounter | Know how many time a command has been used.           | v1         |
+| Cog Name        | Description                                           | Version   |
+| --------------- | ----------------------------------------------------- | --------- |
+| CleverBot       | Talk or ask a question to CleverBot for free.         | v1.0.4    |
+| LeaderBoard     | Global reputation system using points.                | v1.0.2    |
+| CustomCooldown  | Custom slowmode/cooldown moderated by the bot itself. | v1.3.3    |
+| CommandsCounter | Know how many time a command has been used.           | v1        |
+| Captcher        | Captcha cog.                                          | Beta v0.5 |
 
 ## Hidden cogs
 
-| Cog Name     | Description                                          | Version       | Reason       |
-| ------------ | ---------------------------------------------------- | ------------- | ------------ |
-| Learning     | Receive some tutorials about Python.                 | EoL           | End of life  |
-| Captcher     | Captcha cog.                                         | Alpha 0.4-dev | Being worked |
+| Cog Name | Description                          | Version | Reason      |
+| -------- | ------------------------------------ | ------- | ----------- |
+| Learning | Receive some tutorials about Python. | EoL     | End of life |
 
 ## Support
 
