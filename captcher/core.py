@@ -108,6 +108,7 @@ class Core(commands.Cog):
             "read_messages",
             "send_messages",
             "manage_roles",
+            "attach_files",
         ]
         checker = self._permissions_checker(needed_permissions, channel)
         if isinstance(checker, str):

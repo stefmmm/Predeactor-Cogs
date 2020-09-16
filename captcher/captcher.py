@@ -153,6 +153,7 @@ class Captcher(Core):
             "read_messages",
             "send_messages",
             "manage_roles",
+            "attach_files",
         ]
         perms = self._permissions_checker(needed_permissions, channel)
         if isinstance(perms, str):
@@ -206,6 +207,7 @@ class Captcher(Core):
                     "read_messages",
                     "send_messages",
                     "manage_roles",
+                    "attach_files",
                 ]
                 result = self._permissions_checker(needed_permissions, fetched_channel)
                 if not isinstance(result, str):
@@ -312,6 +314,7 @@ class Captcher(Core):
             "read_messages",
             "send_messages",
             "manage_roles",
+            "attach_files",
         ]
         checker = self._permissions_checker(needed_permissions, channel)
         if isinstance(checker, str):
