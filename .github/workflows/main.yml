@@ -21,4 +21,4 @@ jobs:
         name: Install black
 
       - name: Run Black
-        run:  "python -m black --check ."
+        run:  "python -m black --check . -l 99"
