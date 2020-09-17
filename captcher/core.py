@@ -68,9 +68,7 @@ class Core(commands.Cog):
         """
         code = str(randint(1000, 999999))  # Cannot start with leading 0...
         file_fonts = [
-            f"{self.path}/" + f
-            for f in listdir(self.path)
-            if isfile(join(self.path, f))
+            f"{self.path}/" + f for f in listdir(self.path) if isfile(join(self.path, f))
         ]
         return (
             code,
@@ -150,9 +148,7 @@ class Core(commands.Cog):
             )
         return True
 
-    async def _challenge(
-        self, m: discord.Member, c: discord.TextChannel, sr: str, sm: str
-    ):
+    async def _challenge(self, m: discord.Member, c: discord.TextChannel, sr: str, sm: str):
         """Start challenging an user by sending a captcha.
 
         Parameters:
@@ -269,13 +265,9 @@ class Core(commands.Cog):
              to send.
         """
         level_list = {
-            "started": bold(info(f"{member}: Started a captcha verification: "))
-            + reason,
-            "error": bold(error(f"{member}: Error will Captcha was running: "))
-            + reason,
-            "completed": bold(
-                f"\N{WHITE HEAVY CHECK MARK} {member}: Completed Captcha: "
-            )
+            "started": bold(info(f"{member}: Started a captcha verification: ")) + reason,
+            "error": bold(error(f"{member}: Error will Captcha was running: ")) + reason,
+            "completed": bold(f"\N{WHITE HEAVY CHECK MARK} {member}: Completed Captcha: ")
             + reason,
             "kick": bold(f"\N{WOMANS BOOTS} {member}: Kicked: ") + reason,
             "other": bold(f"{member}: Other report: ") + reason,
@@ -418,14 +410,13 @@ class Core(commands.Cog):
     async def _overwrite_server(self, ctx: commands.Context):
         """Function to rewrite whole server. DANGEROUS TO USE.
 
-        Return nothing.
+        Return:
+            str: In case there's already a role called 'Unverified'.
         """
         async with ctx.typing():
             trying_getting_role = get(ctx.guild.roles, name="Unverified")
             if trying_getting_role:
-                return (
-                    "A role called 'Unverified' already exist, please delete it first."
-                )
+                return "A role called 'Unverified' already exist, please delete it first."
             role = await ctx.guild.create_role(
                 name="Unverified",
                 mentionable=True,
@@ -433,14 +424,13 @@ class Core(commands.Cog):
             )
 
             verification_overwrite = {
-                ctx.guild.default_role: discord.PermissionOverwrite(
-                    read_messages=False
-                ),
-                role: discord.PermissionOverwrite(
-                    read_messages=True, send_messages=True
-                ),
+                ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False),
+                role: discord.PermissionOverwrite(read_messages=True, send_messages=True),
                 ctx.guild.me: discord.PermissionOverwrite(
-                    read_messages=True, manage_messages=True
+                    read_messages=True,
+                    manage_messages=True,
+                    send_messages=True,
+                    attach_files=True,
                 ),
             }
 
@@ -482,13 +472,9 @@ class Core(commands.Cog):
         """Obtain a list of permissions for staff."""
         data = {}
         for admin in admins:
-            data[admin] = discord.PermissionOverwrite(
-                read_messages=True, send_messages=False
-            )
+            data[admin] = discord.PermissionOverwrite(read_messages=True, send_messages=False)
         for mod in mods:
-            data[mod] = discord.PermissionOverwrite(
-                read_messages=True, send_messages=False
-            )
+            data[mod] = discord.PermissionOverwrite(read_messages=True, send_messages=False)
         data[default] = discord.PermissionOverwrite(read_messages=False)
         data[me] = discord.PermissionOverwrite(read_messages=True, send_messages=True)
         return data
@@ -585,9 +571,7 @@ class Core(commands.Cog):
         if success:
             gsuccess, log_message = await self._give_role(member)
             if gsuccess:
-                await self._report_log(
-                    member, "completed", f"Completed captcha: {log_message}"
-                )
+                await self._report_log(member, "completed", f"Completed captcha: {log_message}")
             else:
                 await self._report_log(
                     member,

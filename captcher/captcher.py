@@ -37,18 +37,14 @@ class Captcher(Core):
             if setting[0] in ("verifchannel", "logschannel"):
                 value = f"<#{rawvalue}>"  # Channel mention.
             if setting[0] in ("autorole", "temprole"):
-                value = (
-                    f"<@&{rawvalue}>"  # Role mention, but don't worry, bot won't ping.
-                )
+                value = f"<@&{rawvalue}>"  # Role mention, but don't worry, bot won't ping.
             if rawvalue is None:
                 value = "Not set."
             message += "{param}: {val}\n".format(param=parameter, val=value)
         await ctx.send(message, allowed_mentions=discord.AllowedMentions(roles=False))
 
     @config.command()
-    async def autorole(
-        self, ctx: commands.Context, *, role_to_give: discord.Role = None
-    ):
+    async def autorole(self, ctx: commands.Context, *, role_to_give: discord.Role = None):
         """
         Give a role when the user successfully completed the captcha.
 
@@ -88,9 +84,7 @@ class Captcher(Core):
         await ctx.send(message)
 
     @config.command()
-    async def temprole(
-        self, ctx: commands.Context, *, temporary_role: discord.Role = None
-    ):
+    async def temprole(self, ctx: commands.Context, *, temporary_role: discord.Role = None):
         """
         Role to give when someone join, it will be automatically removed after
         passing captcha.
@@ -135,9 +129,7 @@ class Captcher(Core):
             )
 
     @config.command(alias=["verificationchannel", "verifchan"])
-    async def verifchannel(
-        self, ctx: commands.Context, *, channel: discord.TextChannel = None
-    ):
+    async def verifchannel(self, ctx: commands.Context, *, channel: discord.TextChannel = None):
         """
         Set where the captcha must be sent.
         """
@@ -164,9 +156,7 @@ class Captcher(Core):
         await ctx.send(message)
 
     @config.command(alias=["logchan", "logschan", "logchannel"])
-    async def logschannel(
-        self, ctx: commands.Context, *, channel: discord.TextChannel = None
-    ):
+    async def logschannel(self, ctx: commands.Context, *, channel: discord.TextChannel = None):
         """
         Set the log channel, really recommended for knowing who passed verification
         or who failed.
@@ -188,9 +178,7 @@ class Captcher(Core):
             await ctx.send(checker)
             return  # Missing permission
         await self.data.guild(ctx.guild).logschannel.set(channel.id)
-        await ctx.send(
-            "{channel.name} will be used for captcha logs.".format(channel=channel)
-        )
+        await ctx.send("{channel.name} will be used for captcha logs.".format(channel=channel))
 
     @config.command()
     async def activate(self, ctx: commands.Context, true_or_false: bool = None):
@@ -230,9 +218,7 @@ class Captcher(Core):
         else:
             await ctx.send_help()
             message = box(
-                "Captcher is {term}activated.".format(
-                    term="" if data["active"] else "de"
-                )
+                "Captcher is {term}activated.".format(term="" if data["active"] else "de")
             )
         await ctx.send(message)
 
@@ -260,7 +246,10 @@ class Captcher(Core):
                 await ctx.send("I require the Administrator permission first.")
                 return  # In case it's funny to remove perm after using command.
             await self.data.guild(ctx.guild).clear()
-            await self._overwrite_server(ctx)
+            possible_result = await self._overwrite_server(ctx)
+            if possible_result:
+                await ctx.send(possible_result)
+                return
         else:
             await ctx.send("Uhm, why does the captain' had this idea...")
             return
@@ -303,9 +292,7 @@ class Captcher(Core):
             return
         channel = self.bot.get_channel(verifchannel)
         if not channel:
-            await ctx.send(
-                "I cannot find the verification channel, please add one again."
-            )
+            await ctx.send("I cannot find the verification channel, please add one again.")
             return
 
         # Permissions checker (In case someone changed something meanwhile)
@@ -353,9 +340,7 @@ class Captcher(Core):
             )
 
             final = await channel.send(
-                "You {term} the captcha.".format(
-                    term="completed" if captched else "failed"
-                )
+                "You {term} the captcha.".format(term="completed" if captched else "failed")
             )
             has_been_kicked = False
             if captched:

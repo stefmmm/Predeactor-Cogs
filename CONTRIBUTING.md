@@ -35,7 +35,7 @@ Thank you for helping us to improve the repository, and thanks for your suggesti
 ### Pull requests
 
 If you plan to open a pull request, please check the following points:
-- Your code must be adapted with [Black](https://github.com/psf/black).
+- Your code must be adapted with [Black](https://github.com/psf/black) and must respect the line length, which is set to 99 (`black -l 99`).
 - Your code must be tested beforehand and must work.
-- Check your code a second time to remove the useless (Unused variable, checks, etc...)
+- Check your code a second time to remove the useless (Unused variable, checks, etc...).
 - Your code should be as similar as possible to the cog's code.

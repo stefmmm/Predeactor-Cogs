@@ -45,17 +45,13 @@ class Core(commands.Cog):
         return travitia.get("api_key")
 
     async def _make_cleverbot_session(self):
-        cleverbot_session = ac.Cleverbot(
-            await self._get_api_key(), context=ac.DictContext()
-        )
+        cleverbot_session = ac.Cleverbot(await self._get_api_key(), context=ac.DictContext())
         return cleverbot_session
 
     @staticmethod
     async def _ask_question(session, question: str, user_id: Optional[int] = None):
         try:
-            answer = await session.ask(
-                question, user_id if user_id is not None else "00"
-            )
+            answer = await session.ask(question, user_id if user_id is not None else "00")
             answered = True
         except Exception as e:
             answer = "An error happened: {error}. Please try again later. Session closed.".format(
@@ -92,8 +88,7 @@ class Core(commands.Cog):
             await ctx.message.delete()
         except (discord.Forbidden, discord.HTTPException):
             await ctx.send(
-                "Please delete your message, token is sensitive and should be"
-                " kept secret."
+                "Please delete your message, token is sensitive and should be" " kept secret."
             )
         await ctx.send("API key for `travitia` registered.")
 

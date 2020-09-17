@@ -85,9 +85,7 @@ class CustomCooldown(commands.Cog):
                 self.date_format
             )
             cooldown_channels[str(message.channel.id)] = channel_data
-            await self.config.guild(message.guild).cooldown_channels.set(
-                cooldown_channels
-            )
+            await self.config.guild(message.guild).cooldown_channels.set(cooldown_channels)
         else:
             last_message = channel_data["users_on_cooldown"][str(message.author.id)]
             last_message_date = datetime.strptime(last_message, self.date_format)
@@ -106,11 +104,7 @@ class CustomCooldown(commands.Cog):
                                 seconds=(channel_data["cooldown_time"] - total_seconds)
                             )
                             send_me = (
-                                (
-                                    await self.config.guild(
-                                        message.guild
-                                    ).channel_message()
-                                )
+                                (await self.config.guild(message.guild).channel_message())
                                 .replace("{time}", remaining_time)
                                 .replace("{channel}", channel.mention)
                                 .replace("{member}", message.author.name)
@@ -118,13 +112,11 @@ class CustomCooldown(commands.Cog):
                             await user.send(send_me)
             else:
                 deleted = None
-                channel_data["users_on_cooldown"][
-                    str(message.author.id)
-                ] = now.strftime(self.date_format)
-                cooldown_channels[str(message.channel.id)] = channel_data
-                await self.config.guild(message.guild).cooldown_channels.set(
-                    cooldown_channels
+                channel_data["users_on_cooldown"][str(message.author.id)] = now.strftime(
+                    self.date_format
                 )
+                cooldown_channels[str(message.channel.id)] = channel_data
+                await self.config.guild(message.guild).cooldown_channels.set(cooldown_channels)
             # If message deletion wasn't possible:
             if deleted is False:
                 await self._dm_owner(message.guild.owner, channel)
@@ -138,13 +130,9 @@ class CustomCooldown(commands.Cog):
             return
         category = channel.category
         if str(user.id) not in category_data["users_on_cooldown"]:
-            category_data["users_on_cooldown"][str(user.id)] = now.strftime(
-                self.date_format
-            )
+            category_data["users_on_cooldown"][str(user.id)] = now.strftime(self.date_format)
             cooldown_categories[str(category.id)] = category_data
-            await self.config.guild(message.guild).cooldown_categories.set(
-                cooldown_categories
-            )
+            await self.config.guild(message.guild).cooldown_categories.set(cooldown_categories)
         else:
             last_message = category_data["users_on_cooldown"][str(user.id)]
             last_message_date = datetime.strptime(last_message, self.date_format)
@@ -163,11 +151,7 @@ class CustomCooldown(commands.Cog):
                                 seconds=category_data["cooldown_time"] - total_seconds
                             )
                             send_me = (
-                                (
-                                    await self.config.guild(
-                                        message.guild
-                                    ).category_message()
-                                )
+                                (await self.config.guild(message.guild).category_message())
                                 .replace("{time}", remaining_time)
                                 .replace("{category}", category.name)
                                 .replace("{member}", message.author.name)
@@ -175,13 +159,9 @@ class CustomCooldown(commands.Cog):
                             await user.send(send_me)
             else:
                 deleted = None
-                category_data["users_on_cooldown"][str(user.id)] = now.strftime(
-                    self.date_format
-                )
+                category_data["users_on_cooldown"][str(user.id)] = now.strftime(self.date_format)
                 cooldown_categories[str(channel.id)] = category_data
-                await self.config.guild(message.guild).cooldown_categories.set(
-                    cooldown_categories
-                )
+                await self.config.guild(message.guild).cooldown_categories.set(cooldown_categories)
             # If message deletion wasn't possible:
             if deleted is False:
                 await self._dm_owner(message.guild.owner, channel)
@@ -276,9 +256,7 @@ class CustomCooldown(commands.Cog):
         """
         cooldown_categories = await self.config.guild(ctx.guild).cooldown_categories()
         if str(category.id) not in cooldown_categories:
-            await ctx.send(
-                "{category} does not have cooldown.".format(category=category.name)
-            )
+            await ctx.send("{category} does not have cooldown.".format(category=category.name))
             return
         time = self._return_time(time)
         if time:
@@ -292,9 +270,7 @@ class CustomCooldown(commands.Cog):
             await ctx.send("Your time is not correct to me.")
 
     @slowcategory.command(name="delete", aliases=["remove", "del"])
-    async def deletecategory(
-        self, ctx: commands.Context, *, category: discord.CategoryChannel
-    ):
+    async def deletecategory(self, ctx: commands.Context, *, category: discord.CategoryChannel):
         """Delete a category cooldown."""
         predicate = MessagePredicate.yes_or_no(ctx)
         await ctx.send(
@@ -319,9 +295,7 @@ class CustomCooldown(commands.Cog):
             await ctx.send("Cooldowned, forever...")
 
     @slowcategory.command(name="update")
-    async def updatecategory(
-        self, ctx: commands.Context, *, category: discord.CategoryChannel
-    ):
+    async def updatecategory(self, ctx: commands.Context, *, category: discord.CategoryChannel):
         """Update category's data to sync with new and old channel(s) into the category."""
         data = await self.config.guild(ctx.guild).cooldown_categories()
         if str(category.id) not in data:
@@ -363,9 +337,7 @@ class CustomCooldown(commands.Cog):
             await ctx.send("There's no channel to show.")
 
     @slowchannel.command(name="add")
-    async def addchannel(
-        self, ctx: commands.Context, channel: discord.TextChannel, *, time: str
-    ):
+    async def addchannel(self, ctx: commands.Context, channel: discord.TextChannel, *, time: str):
         """Add a channel cooldown.
 
         Time format can be the following:
@@ -399,9 +371,7 @@ class CustomCooldown(commands.Cog):
         )
 
     @slowchannel.command(name="edit")
-    async def editchannel(
-        self, ctx: commands.Context, channel: discord.TextChannel, *, time: str
-    ):
+    async def editchannel(self, ctx: commands.Context, channel: discord.TextChannel, *, time: str):
         """Edit a channel cooldown.
 
         Time format can be the following:
@@ -413,9 +383,7 @@ class CustomCooldown(commands.Cog):
         if str(channel.id) in await self.config.guild(ctx.guild).cooldown_channels():
             time = self._return_time(time)
         else:
-            await ctx.send(
-                "{channel} does not have cooldown.".format(channel=channel.mention)
-            )
+            await ctx.send("{channel} does not have cooldown.".format(channel=channel.mention))
             return
         if not time:
             await ctx.send("Your time is not correct to me.")
@@ -427,17 +395,13 @@ class CustomCooldown(commands.Cog):
         )
 
     @slowchannel.command(name="delete", aliases=["remove", "del"])
-    async def deletechannel(
-        self, ctx: commands.Context, *, channel: discord.TextChannel
-    ):
+    async def deletechannel(self, ctx: commands.Context, *, channel: discord.TextChannel):
         """Delete a channel cooldown."""
         predicate = MessagePredicate.yes_or_no(ctx)
         await ctx.send(
             warning(
                 bold(
-                    "Are you sure you want to delete {channel} data?".format(
-                        channel=channel.name
-                    )
+                    "Are you sure you want to delete {channel} data?".format(channel=channel.name)
                 )
                 + " (Y/N)"
             )
@@ -542,15 +506,11 @@ class CustomCooldown(commands.Cog):
                 else:
                     already_added.append(str(user))
         if len(is_bot) > 1:
-            final_message += (
-                "Those users are bots and cannot be added: {bots}\n".format(
-                    bots=humanize_list(is_bot)
-                )
+            final_message += "Those users are bots and cannot be added: {bots}\n".format(
+                bots=humanize_list(is_bot)
             )
         elif len(is_bot) == 1:
-            final_message += "{bot} is a bot and cannot be added.\n".format(
-                bot=is_bot[0]
-            )
+            final_message += "{bot} is a bot and cannot be added.\n".format(bot=is_bot[0])
         if len(already_added) > 1:
             final_message += "Those users are already ignored: {list}".format(
                 list=humanize_list(already_added)
@@ -723,20 +683,13 @@ class CustomCooldown(commands.Cog):
         pass
 
     @bypass.command(name="channel")
-    async def bypass_channel(
-        self, ctx, member: discord.Member, channel: discord.TextChannel
-    ):
+    async def bypass_channel(self, ctx, member: discord.Member, channel: discord.TextChannel):
         """Resets the cooldown for a user in a channel."""
         cooldown_channels = await self.config.guild(ctx.guild).cooldown_channels()
         if str(channel.id) not in cooldown_channels:
-            await ctx.send(
-                "{channel} is not on cooldown.".format(channel=channel.mention)
-            )
+            await ctx.send("{channel} is not on cooldown.".format(channel=channel.mention))
             return
-        if (
-            str(member.id)
-            not in cooldown_channels[str(channel.id)]["users_on_cooldown"]
-        ):
+        if str(member.id) not in cooldown_channels[str(channel.id)]["users_on_cooldown"]:
             await ctx.send(
                 "{user} is not on cooldown in {channel}.".format(
                     user=member, channel=channel.mention
@@ -758,10 +711,7 @@ class CustomCooldown(commands.Cog):
                 "{category} category is not on cooldown.".format(category=category.name)
             )
             return
-        if (
-            str(member.id)
-            not in cooldown_categories[str(category.id)]["users_on_cooldown"]
-        ):
+        if str(member.id) not in cooldown_categories[str(category.id)]["users_on_cooldown"]:
             await ctx.send(
                 "{user} is not on cooldown in {category}.".format(
                     user=member, category=category.name
@@ -793,9 +743,7 @@ class CustomCooldown(commands.Cog):
         ):
             return
         cooldown_channels = await self.config.guild(message.guild).cooldown_channels()
-        cooldown_categories = await self.config.guild(
-            message.guild
-        ).cooldown_categories()
+        cooldown_categories = await self.config.guild(message.guild).cooldown_categories()
 
         categories_ids = []
         categories_channels = []
@@ -809,22 +757,16 @@ class CustomCooldown(commands.Cog):
             return
         send_dm = await self.config.guild(message.guild).send_dm()
         if str(channel.id) in cooldown_channels:
-            await self._handle_channel_cooldown(
-                message, cooldown_channels, send_dm=send_dm
-            )
+            await self._handle_channel_cooldown(message, cooldown_channels, send_dm=send_dm)
         if channel.category and str(channel.id) in categories_channels:
-            await self._handle_category_cooldown(
-                message, cooldown_categories, send_dm=send_dm
-            )
+            await self._handle_category_cooldown(message, cooldown_categories, send_dm=send_dm)
 
     async def _update_channel_data(
         self, ctx: commands.Context, channel: discord.TextChannel, time
     ):
         if isinstance(time, float):
             time = int(time)
-        async with self.config.guild(
-            ctx.guild
-        ).cooldown_channels() as cooldown_channels:
+        async with self.config.guild(ctx.guild).cooldown_channels() as cooldown_channels:
             cooldown_channels[str(channel.id)] = {
                 "cooldown_time": time,
                 "users_on_cooldown": {},
@@ -835,21 +777,15 @@ class CustomCooldown(commands.Cog):
     ):
         if isinstance(time, float):
             time = int(time)
-        async with self.config.guild(
-            ctx.guild
-        ).cooldown_categories() as cooldown_categories:
+        async with self.config.guild(ctx.guild).cooldown_categories() as cooldown_categories:
             cooldown_categories[str(category.id)] = {
                 "cooldown_time": time,
                 "users_on_cooldown": {},
                 "channels": [channel.id for channel in category.channels],
             }
 
-    async def _delete_channel(
-        self, ctx: commands.Context, channel: discord.TextChannel
-    ):
-        async with self.config.guild(
-            ctx.guild
-        ).cooldown_channels() as cooldown_channels:
+    async def _delete_channel(self, ctx: commands.Context, channel: discord.TextChannel):
+        async with self.config.guild(ctx.guild).cooldown_channels() as cooldown_channels:
             if str(channel.id) in cooldown_channels:
                 del cooldown_channels[str(channel.id)]
             else:
@@ -860,12 +796,8 @@ class CustomCooldown(commands.Cog):
                 )
                 return
 
-    async def _delete_category(
-        self, ctx: commands.Context, category: discord.CategoryChannel
-    ):
-        async with self.config.guild(
-            ctx.guild
-        ).cooldown_categories() as cooldown_categories:
+    async def _delete_category(self, ctx: commands.Context, category: discord.CategoryChannel):
+        async with self.config.guild(ctx.guild).cooldown_categories() as cooldown_categories:
             if str(category.id) in cooldown_categories:
                 del cooldown_categories[str(category.id)]
             else:
@@ -901,8 +833,6 @@ class CustomCooldown(commands.Cog):
                 "channel is registered as cooldowned, but I was unable to delete "
                 "the last message. I need the Manage messages permissions to "
                 "delete messages in this channel.\nThis message won't reappear "
-                "until the next bot reboot or cog reload.".format(
-                    channel=channel.mention
-                )
+                "until the next bot reboot or cog reload.".format(channel=channel.mention)
             )
         self.dmed.append(owner.id)

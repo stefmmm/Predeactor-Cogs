@@ -133,15 +133,11 @@ class LeaderBoard(commands.Cog):
         if 1 <= page_list <= pages:
             page = page_list
         else:
-            await ctx.send(
-                "**Please enter a valid page number! (1 - {})**".format(str(pages))
-            )
+            await ctx.send("**Please enter a valid page number! (1 - {})**".format(str(pages)))
             return
 
         msg = ""
-        msg += "Rank     Name                   (Page {}/{})     \n\n".format(
-            page, pages
-        )
+        msg += "Rank     Name                   (Page {}/{})     \n\n".format(page, pages)
         rank = 1 + per_page * (page - 1)
         start_index = per_page * page - per_page
         end_index = per_page * page

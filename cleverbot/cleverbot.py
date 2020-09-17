@@ -22,9 +22,7 @@ class CleverBot(Core):
         asking a single question."""
         async with ctx.typing():
             session = await self._make_cleverbot_session()
-            answer, answered = await self._ask_question(
-                session, question, ctx.author.id
-            )
+            answer, answered = await self._ask_question(session, question, ctx.author.id)
             if answered:
                 message = "{user}, {answer}".format(user=ctx.author.name, answer=answer)
             else:
@@ -39,9 +37,7 @@ class CleverBot(Core):
         You don't need to use a prefix or the command using this mode."""
 
         if str(ctx.author.id) in self.conversation:
-            await ctx.send(
-                "There's already a conversation running. Say `close` to " "stop it."
-            )
+            await ctx.send("There's already a conversation running. Say `close` to " "stop it.")
             return
 
         session = await self._make_cleverbot_session()
@@ -98,13 +94,9 @@ class CleverBot(Core):
         # if all checks pass
         async with ctx.typing():
             self.conversation[str(ctx.author.id)]["typing"] = True
-            answer, answered = await self._ask_question(
-                session, message.content, ctx.author.id
-            )
+            answer, answered = await self._ask_question(session, message.content, ctx.author.id)
             if answered:
-                message = "{user}, {answer}".format(
-                    user=ctx.author.mention, answer=answer
-                )
+                message = "{user}, {answer}".format(user=ctx.author.mention, answer=answer)
                 self.conversation[str(ctx.author.id)]["timer"] = datetime.now()
                 exiting = False
             else:
