@@ -25,8 +25,7 @@ class Learning(commands.Cog):
         requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
         user_id: int,
     ):
-        if requester is not "user":
-            await self.data.user_from_id(user_id).clear()
+        await self.data.user_from_id(user_id).clear()
 
     def __init__(self, bot):
         self.bot = bot

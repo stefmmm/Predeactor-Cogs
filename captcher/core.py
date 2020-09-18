@@ -250,14 +250,14 @@ class Core(commands.Cog):
     async def _report_log(
         self,
         member: discord.Member,
-        type: Union["started", "error", "completed", "kick", "other"],
+        report_type: Union["started", "error", "completed", "kick", "other"],
         reason: str,
     ):
         """Send a message in the server's log channel for the given member.
 
         Parameters:
             member: The member where the report come from.
-            type: The report's type. Must be started, error, completed, kick or other.
+            report_type: The report's type. Must be started, error, completed, kick or other.
             reason: The report reason.
 
         Return:
@@ -498,7 +498,6 @@ class Core(commands.Cog):
         if can_send_message:
             if user in actual_perm:
                 del actual_perm[user]
-                return True
             else:
                 actual_perm[user] = discord.PermissionOverwrite(send_message=True)
         else:
