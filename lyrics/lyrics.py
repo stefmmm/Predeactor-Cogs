@@ -74,3 +74,7 @@ class Lyrics(commands.Cog):
             self.client = ksoftapi.Client(keys.get("api_key"))
             return self.client
         return AttributeError("API key is not set.")
+
+    def cog_unload(self):
+        if self.client:
+            await self.client.close()
