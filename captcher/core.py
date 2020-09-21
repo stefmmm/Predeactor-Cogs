@@ -274,7 +274,7 @@ class Core(commands.Cog):
         }
         channel = await self._get_log_channel(member)
         if channel:
-            message = level_list[type]
+            message = level_list[report_type]
             try:
                 return await channel.send(message)
             except (discord.HTTPException, discord.Forbidden):

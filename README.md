@@ -19,12 +19,14 @@ This is a repo made for [Red](https://github.com/Cog-Creators/Red-DiscordBot).
 | CustomCooldown  | Custom slowmode/cooldown moderated by the bot itself. | v1.3.3    |
 | CommandsCounter | Know how many time a command has been used.           | v1        |
 | Captcher        | Captcha cog.                                          | Beta v0.5 |
+| Lyrics          | Get lyrics of a music through KSoft.Si.               | Beta v0.5 |
 
 ## Hidden cogs
 
-| Cog Name | Description                          | Version | Reason      |
-| -------- | ------------------------------------ | ------- | ----------- |
-| Learning | Receive some tutorials about Python. | EoL     | End of life |
+| Cog Name | Description                                | Version   | Reason             |
+| -------- | ------------------------------------------ | --------- | ------------------ |
+| Learning | Receive some tutorials about Python.       | EoL       | End of life        |
+| SXCU     | Shorten your link, and more in the future. | Alpha 0.1 | Being worked on... |
 
 ## Support
 

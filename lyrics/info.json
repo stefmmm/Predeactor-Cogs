@@ -1,0 +1,7 @@
+{
+    "author": ["Predeactor"],
+    "requirements": [
+        "ksoftapi"
+    ],
+    "install_msg": "Hello, this cog require an API key from KSoft.SI, to add one, go to https://api.ksoft.si and add your bot, wait for obtaining your token and register it by using `[p]set api ksoftsi api_key,<Your API key>`."
+}

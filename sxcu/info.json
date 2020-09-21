@@ -1,0 +1,5 @@
+{
+    "author": ["Predeactor"],
+    "install_msg": "Hello, this cog require an URL from sxcu.net, to add one, go to https://sxcu.net and create a subdomain. Take the URL and use `[p]set api sxcu url,<Your URL>`.",
+    "hidden": true
+}
