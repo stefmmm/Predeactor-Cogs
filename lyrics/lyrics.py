@@ -1,4 +1,5 @@
 import ksoftapi
+from asyncio import create_task
 
 from typing import Literal
 
@@ -75,6 +76,10 @@ class Lyrics(commands.Cog):
             return self.client
         return AttributeError("API key is not set.")
 
+    @staticmethod
+    async def __session_closer(client):
+        await client.close()
+
     def cog_unload(self):
         if self.client:
-            await self.client.close()
+            create_task(self.__session_closer(self.client))
