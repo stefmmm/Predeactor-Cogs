@@ -11,7 +11,7 @@ from redbot.core.utils.chat_formatting import humanize_list
 class Core(commands.Cog):
 
     __author__ = ["Predeactor"]
-    __version__ = "v1.0.4.1"
+    __version__ = "v1.0.4.2"
 
     async def red_delete_data_for_user(
         self,
@@ -74,7 +74,7 @@ class Core(commands.Cog):
 
     @checks.is_owner()
     @commands.command()
-    async def travaitiaapikey(self, ctx: commands.Context, api_key: str):
+    async def travaitiaapikey(self, ctx: commands.Context, *, api_key: str):
         """Set the API key for Travitia API.
 
         To set the API key:
