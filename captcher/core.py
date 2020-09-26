@@ -561,6 +561,8 @@ class Core(commands.Cog):
         )
         if isinstance(success, str):  # We got an error with permissions
             return
+        if role in member.roles:
+            return  # Assuming we gave him manually the role
         if (success and user_message) is None:
             return  # Left in the meantime
         final = await guild_channel.send(
