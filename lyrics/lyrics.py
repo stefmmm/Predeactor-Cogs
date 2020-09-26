@@ -1,10 +1,14 @@
+import discord
 import ksoftapi
 from asyncio import create_task
+from asyncio.exceptions import TimeoutError as Te
 
 from typing import Literal
 
 from redbot.core import commands
-from redbot.core.utils.chat_formatting import pagify, humanize_list
+from redbot.core.utils.chat_formatting import pagify, humanize_list, bold
+from redbot.core.utils.predicates import MessagePredicate
+from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 
 BASE_URL = "https://api.ksoft.si/lyrics/search"
 
@@ -43,6 +47,7 @@ class Lyrics(commands.Cog):
         pass
 
     @commands.command(alias=["lyric"])
+    @commands.has_permissions(embed_links=True)
     async def lyrics(self, ctx: commands.Context, *, song_name: str):
         """Return the lyrics of a given music/song name.
 
@@ -58,9 +63,59 @@ class Lyrics(commands.Cog):
         except ksoftapi.NoResults:
             await ctx.send("No lyrics were found for your music.")
             return
-        lyrics = str(music_lyrics[0].lyrics) + "\nPowered by KSoft.Si"
-        for text in pagify(lyrics):
-            await ctx.send(text)
+        message, available_musics = await self._title_choose(music_lyrics)
+        await ctx.maybe_send_embed(message)
+        predicator = MessagePredicate.less(10, ctx)
+        try:
+            user_message = await self.bot.wait_for("message", check=predicator, timeout=60)
+        except Te:
+            await ctx.send("It's so silent on the outside...")
+            return
+
+        choosen_music = user_message.content
+        if choosen_music not in available_musics:
+            await ctx.send(
+                "I was unable to find the corresponding music in the available music list."
+            )
+            return
+        music = available_musics[choosen_music]
+        embeds = []
+        embed = discord.Embed(color=await ctx.embed_color(), title=music.name, description=None)
+        embed.set_thumbnail(url=music.album_art)
+        embed.set_footer(text="Powered by KSoft.Si.", icon_url=ctx.author.avatar_url)
+        for text in pagify(music.lyrics):
+            embed.description = text
+            embeds.append(embed)
+        await menu(ctx, embeds, DEFAULT_CONTROLS)
+
+    @staticmethod
+    async def _title_choose(list_of_music: list):
+        """Function to return for requesting user's prompt, asking what music to choose.
+
+        Parameter:
+            - list_of_music: A list containing musics.
+
+        Returns:
+            A tuple with:
+            - str: A list with musics name and their corresponding number.
+            - dict: A list with the music according his number in the message.
+        """
+        message = "Please choose the music you want lyrics from by typing his number:\n\n"
+        method = {}
+        n = 0
+        for music in list_of_music:
+            if not isinstance(music, ksoftapi.models.LyricResult):
+                continue  # Not a music
+            year = music.album_year[0]
+            message += "`{number}` - {title} by {author} {year}\n".format(
+                number=n,
+                title=music.name,
+                author=music.artist,
+                year="(" + bold(year) + ")" if year else "",
+            )
+            method[str(n)] = music
+            n += 1
+        return message, method
 
     async def obtain_client(self):
         """Get a client and put it in self.client (For caching).
