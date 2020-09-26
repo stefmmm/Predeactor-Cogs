@@ -12,14 +12,14 @@ This is a repo made for [Red](https://github.com/Cog-Creators/Red-DiscordBot).
 
 ## Available cogs list
 
-| Cog Name        | Description                                              | Version   |
-| --------------- | -------------------------------------------------------- | --------- |
-| Captcher        | Captcha cog.                                             | Beta v0.5 |
-| CleverBot       | Talk or ask a question to CleverBot for free.            | v1.0.4    |
-| CommandsCounter | Know how many time a command has been used super easily. | v1        |
-| CustomCooldown  | Custom slowmode/cooldown moderated by the bot itself.    | v1.3.3    |
-| LeaderBoard     | Global reputation system using points.                   | v1.0.2    |
-| Lyrics          | Get lyrics of a music through KSoft.Si.                  | v1        |
+| Cog Name        | Description                                              | Version     |
+| --------------- | -------------------------------------------------------- | ----------- |
+| Captcher        | Captcha cog.                                             | Beta v0.5.1 |
+| CleverBot       | Talk or ask a question to CleverBot for free.            | v1.0.4      |
+| CommandsCounter | Know how many time a command has been used super easily. | v1          |
+| CustomCooldown  | Custom slowmode/cooldown moderated by the bot itself.    | v1.3.3      |
+| LeaderBoard     | Global reputation system using points.                   | v1.0.2      |
+| Lyrics          | Get lyrics of a music through KSoft.Si.                  | v1          |
 
 ## Hidden cogs
 

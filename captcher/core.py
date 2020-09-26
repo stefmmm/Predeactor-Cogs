@@ -16,10 +16,13 @@ from redbot.core.utils.predicates import MessagePredicate
 
 
 class Core(commands.Cog):
-    """Functions for Captcher."""
+    """Functions for Captcher.
+
+    You use them, you die.
+    """
 
     __author__ = ["Predeactor"]
-    __version__ = "Beta 0.5"
+    __version__ = "Beta 0.5.1"
 
     async def red_delete_data_for_user(
         self,
@@ -542,20 +545,46 @@ class Core(commands.Cog):
         if member.bot:
             return  # We ignore bots
 
-        if not await self.data.guild(member.guild).active():
+        data = await self.data.guild(member.guild).all()
+        active = data["active"]
+        guild_channel_id = data["verifchannel"]
+        temprole = data["temprole"]
+
+        if not active:
             return
-        guild_channel = await self.data.guild(member.guild).verifchannel()
-        if not guild_channel:
+        if not guild_channel_id:
             return  # We don't know where the captcha must be sent
 
-        guild_channel = self.bot.get_channel(guild_channel)
+        guild_channel = self.bot.get_channel(guild_channel_id)
         if not guild_channel:
+            await self._report_log(
+                member,
+                error,
+                "Cannot find the verification channel, deleting data and deactivating Captcher.",
+            )
             await self.data.guild(member.guild).verifchannel.clear()
-            return  # Same, worst is that channel was just deleted, so we delete it
-        temprole = await self.data.guild(member.guild).temprole()
+            await self.data.guild(member.guild).active.clear()
+            return
+
         if temprole:
             role = member.guild.get_role(temprole)
-            await member.add_roles(role, reason="Temporary role given by captcha.")
+            if not role:
+                await self.data.guild(member.guild).temprole.clear()  # No more temporary role bye
+                await self.data.guild(member.guild).temprole.clear()
+                return
+            try:
+                await member.add_roles(role, reason="Temporary role given by captcha.")
+            except discord.Forbidden:
+                await self._report_log(
+                    member,
+                    error,
+                    (
+                        "I was unable to give the temporary role due to missing permissions, "
+                        "aborting and deactivating Captcher."
+                    ),
+                )
+                return
+
         success, bot_message, user_message = await self.challenger(
             member, guild_channel, "Joined the server."
         )
