@@ -16,7 +16,7 @@ BASE_URL = "https://api.ksoft.si/lyrics/search"
 class Lyrics(commands.Cog):
 
     __author__ = ["Predeactor"]
-    __version__ = "Beta 0.5"
+    __version__ = "v1"
 
     def __init__(self, bot, *args, **kwargs):
         super().__init__(*args, **kwargs)
