@@ -48,6 +48,7 @@ class Lyrics(commands.Cog):
 
     @commands.command(alias=["lyric"])
     @commands.has_permissions(embed_links=True)
+    @commands.max_concurrency(1, commands.BucketType.user, wait=False)
     async def lyrics(self, ctx: commands.Context, *, song_name: str):
         """Return the lyrics of a given music/song name.
 
@@ -86,7 +87,7 @@ class Lyrics(commands.Cog):
         for text in pagify(music.lyrics):
             embed.description = text
             embeds.append(embed)
-        await menu(ctx, embeds, DEFAULT_CONTROLS)
+        create_task(menu(ctx, embeds, DEFAULT_CONTROLS))  # No await since max_concurrency is here
 
     @staticmethod
     async def _title_choose(list_of_music: list):
@@ -100,7 +101,7 @@ class Lyrics(commands.Cog):
             - str: A list with musics name and their corresponding number.
             - dict: A list with the music according his number in the message.
         """
-        message = "Please choose the music you want lyrics from by typing his number:\n\n"
+        message = "Please select the music you wish to get the lyrics by selecting the corresponding number:\n\n"
         method = {}
         n = 0
         for music in list_of_music:
