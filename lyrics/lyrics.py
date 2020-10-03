@@ -1,14 +1,13 @@
-import discord
-import ksoftapi
 from asyncio import create_task
 from asyncio.exceptions import TimeoutError as Te
-
 from typing import Literal
 
+import discord
+import ksoftapi
 from redbot.core import commands
-from redbot.core.utils.chat_formatting import pagify, humanize_list, bold
+from redbot.core.utils.chat_formatting import bold, humanize_list, pagify
+from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
 from redbot.core.utils.predicates import MessagePredicate
-from redbot.core.utils.menus import menu, DEFAULT_CONTROLS
 
 BASE_URL = "https://api.ksoft.si/lyrics/search"
 

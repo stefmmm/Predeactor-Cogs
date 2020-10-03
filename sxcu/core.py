@@ -1,9 +1,9 @@
-from redbot.core import commands
-from redbot.core.utils.chat_formatting import humanize_list
+import re
 
 import aiohttp
-import re
 import discord
+from redbot.core import commands
+from redbot.core.utils.chat_formatting import humanize_list
 
 
 class SXCU(commands.Cog):

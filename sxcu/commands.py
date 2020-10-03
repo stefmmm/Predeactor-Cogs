@@ -1,5 +1,6 @@
-from .core import SXCU
 from redbot.core import commands
+
+from .core import SXCU
 
 
 class Commands(SXCU, name="SXCU"):
