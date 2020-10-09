@@ -46,7 +46,7 @@ class Lyrics(commands.Cog):
         pass
 
     @commands.command(alias=["lyric"])
-    @commands.has_permissions(embed_links=True)
+    @commands.bot_has_permissions(embed_links=True)
     @commands.max_concurrency(1, commands.BucketType.user, wait=False)
     async def lyrics(self, ctx: commands.Context, *, song_name: str):
         """Return the lyrics of a given music/song name.
