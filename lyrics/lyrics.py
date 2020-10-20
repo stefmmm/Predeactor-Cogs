@@ -15,7 +15,7 @@ BASE_URL = "https://api.ksoft.si/lyrics/search"
 class Lyrics(commands.Cog):
 
     __author__ = ["Predeactor"]
-    __version__ = "v1"
+    __version__ = "v1.0.1"
 
     def __init__(self, bot, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -25,13 +25,10 @@ class Lyrics(commands.Cog):
     def format_help_for_context(self, ctx: commands.Context) -> str:
         """Thanks Sinbad!"""
         pre_processed = super().format_help_for_context(ctx)
-        return (
-            "{pre_processed}\n\nAuthor: {authors}\nCog Version: {version}\nThe cog is in beta "
-            "and may be subect to unwanted behavior.".format(
-                pre_processed=pre_processed,
-                authors=humanize_list(self.__author__),
-                version=self.__version__,
-            )
+        return "{pre_processed}\n\nAuthor: {authors}\nCog Version: {version}".format(
+            pre_processed=pre_processed,
+            authors=humanize_list(self.__author__),
+            version=self.__version__,
         )
 
     async def red_delete_data_for_user(
@@ -63,6 +60,8 @@ class Lyrics(commands.Cog):
         except ksoftapi.NoResults:
             await ctx.send("No lyrics were found for your music.")
             return
+        except KeyError:
+            await ctx.send("The set API key seem to be wrong. Please contact the bot owner.")
         message, available_musics = await self._title_choose(music_lyrics)
         await ctx.maybe_send_embed(message)
         predicator = MessagePredicate.less(10, ctx)
