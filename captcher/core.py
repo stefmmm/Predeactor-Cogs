@@ -1,9 +1,11 @@
+# TODO: Add custom exception so we stop do stupid guess
+
 import asyncio
 from datetime import datetime
 from os import listdir
 from os.path import isfile, join
 from random import randint
-from typing import Literal, Optional, Union
+from typing import Literal, Optional
 
 import discord
 from captcha.image import ImageCaptcha
@@ -19,6 +21,7 @@ class Core(commands.Cog):
     """Functions for Captcher.
 
     You use them, you die.
+    No, seriously, try to keep yourself from touching this.
     """
 
     __author__ = ["Predeactor"]
@@ -47,7 +50,7 @@ class Core(commands.Cog):
             temprole=None,
         )
         self.path = bundled_data_path(self)
-        self.in_challenge = {}
+        self.in_challenge = {}  # Try to improve this part, it sound like pain and killing.
         super(Core, self).__init__()
 
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -204,8 +207,8 @@ class Core(commands.Cog):
             channel: discord.TextChannel, The channel where we are waiting for message.
 
         Returns:
-            bool: If the captcha was correct or wrong.
-            discord.Message: User's message.
+            bool: If the captcha was correct, wrong or not answered.
+            discord.Message: User's message if a message was sent.
         """
         try:
             user_message = await self.bot.wait_for(
@@ -214,7 +217,7 @@ class Core(commands.Cog):
                 check=MessagePredicate.same_context(user=member, channel=channel),
             )
         except asyncio.TimeoutError:
-            return False, None
+            return False, None  # Maybe use None too? Anyway, custom errors so F
         return True if user_message.content == str(code) else False, user_message
 
     async def _give_role(self, member: discord.Member):
@@ -253,9 +256,10 @@ class Core(commands.Cog):
     async def _report_log(
         self,
         member: discord.Member,
-        report_type: Union["started", "error", "completed", "kick", "other"],
+        report_type: Literal["started", "error", "completed", "kick", "other"],
         reason: str,
     ):
+        # TODO: Edit the actual message instead of sending a new message.
         """Send a message in the server's log channel for the given member.
 
         Parameters:
@@ -320,6 +324,7 @@ class Core(commands.Cog):
         Return:
             bool: True if succeeded, else return False.
         """
+        # TODO: Only alert kick through Captcher logs
         try:
             try:  # DMing user before he got kicked.
                 await member.send(
