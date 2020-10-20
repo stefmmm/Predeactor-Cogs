@@ -5,7 +5,7 @@ from typing import Literal
 import discord
 import ksoftapi
 from redbot.core import commands
-from redbot.core.utils.chat_formatting import bold, humanize_list, pagify
+from redbot.core.utils.chat_formatting import bold, humanize_list, pagify, inline
 from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
 from redbot.core.utils.predicates import MessagePredicate
 
@@ -15,7 +15,7 @@ BASE_URL = "https://api.ksoft.si/lyrics/search"
 class Lyrics(commands.Cog):
 
     __author__ = ["Predeactor"]
-    __version__ = "v1.0.1"
+    __version__ = "v1.0.2"
 
     def __init__(self, bot, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -59,6 +59,12 @@ class Lyrics(commands.Cog):
             music_lyrics = await client.music.lyrics(song_name)
         except ksoftapi.NoResults:
             await ctx.send("No lyrics were found for your music.")
+            return
+        except ksoftapi.APIError as e:
+            await ctx.send("The API returned an unknow error: {error}".format(error=inline(e)))
+            return
+        except ksoftapi.Forbidden:
+            await ctx.send("Request forbidden by the API.")
             return
         except KeyError:
             await ctx.send("The set API key seem to be wrong. Please contact the bot owner.")
@@ -105,12 +111,12 @@ class Lyrics(commands.Cog):
         for music in list_of_music:
             if not isinstance(music, ksoftapi.models.LyricResult):
                 continue  # Not a music
-            year = music.album_year[0]
+            year = int(music.album_year[0])
             message += "`{number}` - {title} by {author} {year}\n".format(
                 number=n,
                 title=music.name,
                 author=music.artist,
-                year="(" + bold(year) + ")" if year else "",
+                year="(" + bold(str(year)) + ")" if year and year > 1970 else "",
             )
             method[str(n)] = music
             n += 1
