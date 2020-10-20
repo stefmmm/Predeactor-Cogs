@@ -15,7 +15,7 @@ class LeaderBoard(commands.Cog):
     """
 
     __author__ = ["Predeactor"]
-    __version__ = "v1.0.2"
+    __version__ = "v1.0.3"
 
     async def red_delete_data_for_user(
         self,
@@ -76,7 +76,7 @@ class LeaderBoard(commands.Cog):
         await self.data.user(ctx.author).mention.set(mention)
         await ctx.send("Mention setting set to `{bool}`".format(bool=mention))
 
-    async def _give_rep(self, ctx, user):
+    async def _give_rep(self, ctx: commands.Context, user: discord.User):
         user_points = await self.data.user(user).points()
         await self.data.user(user).points.set(user_points + 1)
 
@@ -108,7 +108,7 @@ class LeaderBoard(commands.Cog):
             await ctx.send("The leaderboard is empty... Nobody's popular, for now.")
             return
         for user_id in all_users:
-            user_name = await self._get_user(user_id)
+            user_name = await self._get_user_name(user_id)
             users.append((user_name, all_users[user_id]["points"]))
             if ctx.author.id == user_id:
                 user_stat = all_users[user_id]["points"]
@@ -173,11 +173,11 @@ class LeaderBoard(commands.Cog):
             return text[: max_length - 1] + "…"
         return text
 
-    async def _get_user(self, user_id: int):
+    async def _get_user_name(self, user_id: int):
         user = self.bot.get_user(user_id)
         if user is None:  # User not found
             try:
-                user = self.bot.fetch_user(user_id)
+                user = await self.bot.fetch_user(user_id)
             except (discord.NotFound, discord.HTTPException):
                 return "Unknown User"
         return user.name
