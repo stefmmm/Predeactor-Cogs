@@ -97,6 +97,11 @@ class LeaderBoard(commands.Cog):
         if time_in_seconds < 60:
             await ctx.send("Time must be longer than 1 minute.")
             return
+        if time_in_seconds > 2 ** 64:
+            await ctx.send(
+                "I won't allow you to go over this point. (Btw, can you tell me why you want to"
+                "give only ONE points in your misearable life?)"
+            )
         await self.data.cooldown_time.set(time_in_seconds)
         await ctx.send(
             "Done. Peoples will be able to give another point of reputation after {time} "
