@@ -1,11 +1,12 @@
 import math
 import operator
+from datetime import datetime
 from typing import Literal
 
 import discord
 from redbot.core import Config, commands
 from redbot.core.utils import AsyncIter
-from redbot.core.utils.chat_formatting import box, humanize_list
+from redbot.core.utils.chat_formatting import box, humanize_list, humanize_timedelta
 
 
 class LeaderBoard(commands.Cog):
@@ -29,7 +30,8 @@ class LeaderBoard(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.data = Config.get_conf(self, identifier=82466655781)
-        self.data.register_user(points=0, mention=True)
+        self.data.register_user(points=0, mention=True, next_reputation=0)
+        self.data.register_global(cooldown_time=21600)
         super(LeaderBoard, self).__init__()
 
     def format_help_for_context(self, ctx: commands.Context) -> str:
@@ -43,24 +45,32 @@ class LeaderBoard(commands.Cog):
 
     @commands.command()
     @commands.guild_only()
-    @commands.cooldown(1, 21600, commands.BucketType.user)
     async def rep(self, ctx: commands.Context, *, user: discord.User):
         """Give a reputation point to another user!"""
+        current_time = round(datetime.timestamp(datetime.now()))
+        reputation_point_cool = await self.data.user(ctx.author).next_reputation()
+        cooldown_time = await self.data.cooldown_time()
+        next_cooldown = reputation_point_cool + cooldown_time
         if user.bot:
             await ctx.send(
                 "We are the robots. Robot can't receive reputation points"
                 " because they already are too popular!"
             )
-            ctx.command.reset_cooldown(ctx)
             return
         if user == ctx.author:
             await ctx.send(
                 "Uhm, I don't think I can allow you to give you reputation"
                 " points to yourself... :)"
             )
-            ctx.command.reset_cooldown(ctx)
             return
-        await self._give_rep(ctx, user)
+        if current_time <= next_cooldown:
+            await ctx.send(
+                "Oh no! You have to wait `{time}`.".format(
+                    time=humanize_timedelta(seconds=next_cooldown - current_time)
+                )
+            )
+            return
+        await self._give_rep(ctx, user, current_time)
 
     @commands.group()
     async def repset(self, ctx: commands.GuildContext):
@@ -76,7 +86,28 @@ class LeaderBoard(commands.Cog):
         await self.data.user(ctx.author).mention.set(mention)
         await ctx.send("Mention setting set to `{bool}`".format(bool=mention))
 
-    async def _give_rep(self, ctx: commands.Context, user: discord.User):
+    @repset.command()
+    @commands.is_owner()
+    async def cooldown(self, ctx: commands.Context, time_in_seconds: int):
+        """Set the cooldown time between each reputation points given.
+
+        Default to `21600`. (6 hours)
+        Time must be given in seconds.
+        """
+        if time_in_seconds < 60:
+            await ctx.send("Time must be longer than 1 minute.")
+            return
+        await self.data.cooldown_time.set(time_in_seconds)
+        await ctx.send(
+            "Done. Peoples will be able to give another point of reputation after {time} "
+            "({seconds}).".format(
+                time=humanize_timedelta(seconds=time_in_seconds), seconds=time_in_seconds
+            )
+        )
+
+    async def _give_rep(
+        self, ctx: commands.Context, user: discord.User, current_time_as_seconds: int
+    ):
         user_points = await self.data.user(user).points()
         await self.data.user(user).points.set(user_points + 1)
 
@@ -89,6 +120,7 @@ class LeaderBoard(commands.Cog):
                 plural="s" if (user_points + 1) > 1 else "",
             )
         )
+        await self.data.user(ctx.author).next_reputation.set(current_time_as_seconds)
 
     async def _user_mention(self, user):
         if await self.data.user(user).mention():
