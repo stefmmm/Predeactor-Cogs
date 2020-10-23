@@ -7,7 +7,7 @@ from redbot.core.utils.chat_formatting import humanize_list
 
 from .errors import SubNeedToken, SubWrongToken, UnallowedFileType, APIRatelimited
 
-from typing import Union, Optional
+from typing import Union, Optional, Literal
 
 
 class SXCU(commands.Cog):
@@ -18,6 +18,17 @@ class SXCU(commands.Cog):
     def __init__(self, bot):
         super().__init__()
         self.bot = bot
+
+    async def red_delete_data_for_user(
+        self,
+        *,
+        requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
+        user_id: int,
+    ):
+        """
+        Nothing to delete...
+        """
+        pass
 
     def format_help_for_context(self, ctx: commands.Context) -> str:
         """Thanks Sinbad!"""
@@ -241,9 +252,6 @@ class SXCU(commands.Cog):
         Return:
             str: The URL.
             str: The token if requested and existing.
-
-        Raise:
-            AttributeError: If the URL key isn't registered.
         """
         listing = []
         keys = await self.bot.get_shared_api_tokens("sxcu")

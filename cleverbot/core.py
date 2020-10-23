@@ -19,6 +19,9 @@ class Core(commands.Cog):
         requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
         user_id: int,
     ):
+        """
+        Nothing to delete...
+        """
         pass
 
     # Nothing to delete, I assume that if the user was previously in self.conversation,
