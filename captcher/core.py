@@ -120,7 +120,7 @@ class Core(commands.Cog):
         if not start_message:
             start_message = (
                 "Hello {member}, this server include an extra security layout to protect "
-                "there members. You're asked to complete a security captcha in order to "
+                "their members. You're asked to complete a security captcha in order to "
                 "join this server. If you fail or take too much time to answer (5 "
                 "minutes), you will be automatically kicked from this server.\nNote: "
                 "The captcha doesn't include space.".format(member=member.mention)
