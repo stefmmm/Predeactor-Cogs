@@ -111,12 +111,12 @@ class Lyrics(commands.Cog):
         for music in list_of_music:
             if not isinstance(music, ksoftapi.models.LyricResult):
                 continue  # Not a music
-            year = int(music.album_year[0])
+            year = music.album_year[0]
             message += "`{number}` - {title} by {author} {year}\n".format(
                 number=n,
                 title=music.name,
                 author=music.artist,
-                year="(" + bold(str(year)) + ")" if year and year > 1970 else "",
+                year="(" + bold(str(year)) + ")" if year and int(year) > 1970 else "",
             )
             method[str(n)] = music
             n += 1
