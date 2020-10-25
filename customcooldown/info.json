@@ -5,5 +5,12 @@
     "end_user_data_statement": "This cog store data about users persistently for required reasons. Red may store where and when you send your last message, depending cog's parameter (If sent in a cooldowned channel/category) as your Discord's ID.",
     "description": "CustomCooldown moderated by bot.",
     "short": "CustomCooldown moderated by bot.",
-    "install_msg": "Thank for installing the CustomCooldown cog!"
+    "install_msg": "Thank for installing the CustomCooldown cog!",
+    "tags": [
+        "utility",
+        "tools",
+        "cooldown",
+        "moderation",
+        "spam"
+    ]
 }
