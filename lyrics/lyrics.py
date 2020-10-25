@@ -5,7 +5,7 @@ from typing import Literal
 import discord
 import ksoftapi
 from redbot.core import commands
-from redbot.core.utils.chat_formatting import bold, humanize_list, pagify
+from redbot.core.utils.chat_formatting import bold, humanize_list, pagify, inline
 from redbot.core.utils.menus import DEFAULT_CONTROLS, menu
 from redbot.core.utils.predicates import MessagePredicate
 
@@ -15,7 +15,7 @@ BASE_URL = "https://api.ksoft.si/lyrics/search"
 class Lyrics(commands.Cog):
 
     __author__ = ["Predeactor"]
-    __version__ = "v1"
+    __version__ = "v1.0.2"
 
     def __init__(self, bot, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -25,13 +25,10 @@ class Lyrics(commands.Cog):
     def format_help_for_context(self, ctx: commands.Context) -> str:
         """Thanks Sinbad!"""
         pre_processed = super().format_help_for_context(ctx)
-        return (
-            "{pre_processed}\n\nAuthor: {authors}\nCog Version: {version}\nThe cog is in beta "
-            "and may be subect to unwanted behavior.".format(
-                pre_processed=pre_processed,
-                authors=humanize_list(self.__author__),
-                version=self.__version__,
-            )
+        return "{pre_processed}\n\nAuthor: {authors}\nCog Version: {version}".format(
+            pre_processed=pre_processed,
+            authors=humanize_list(self.__author__),
+            version=self.__version__,
         )
 
     async def red_delete_data_for_user(
@@ -63,6 +60,14 @@ class Lyrics(commands.Cog):
         except ksoftapi.NoResults:
             await ctx.send("No lyrics were found for your music.")
             return
+        except ksoftapi.APIError as e:
+            await ctx.send("The API returned an unknow error: {error}".format(error=inline(e)))
+            return
+        except ksoftapi.Forbidden:
+            await ctx.send("Request forbidden by the API.")
+            return
+        except KeyError:
+            await ctx.send("The set API key seem to be wrong. Please contact the bot owner.")
         message, available_musics = await self._title_choose(music_lyrics)
         await ctx.maybe_send_embed(message)
         predicator = MessagePredicate.less(10, ctx)
@@ -111,7 +116,7 @@ class Lyrics(commands.Cog):
                 number=n,
                 title=music.name,
                 author=music.artist,
-                year="(" + bold(year) + ")" if year else "",
+                year="(" + bold(str(year)) + ")" if year and int(year) > 1970 else "",
             )
             method[str(n)] = music
             n += 1

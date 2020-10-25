@@ -7,5 +7,8 @@ __red_end_user_data_statement__ = (
 )
 
 
-def setup(bot):
-    bot.add_cog(CustomCooldown(bot))
+async def setup(bot):
+    cog = CustomCooldown(bot)
+    bot.add_cog(cog)
+    # noinspection PyProtectedMember
+    await cog._maybe_update_config()

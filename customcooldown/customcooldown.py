@@ -2,10 +2,12 @@ import asyncio
 from contextlib import suppress as suppressor
 from datetime import datetime
 from typing import Literal
+from string import Template
 
 import discord
 from redbot.core import Config, checks, commands
 from redbot.core.commands.converter import parse_timedelta
+from redbot.core.utils import AsyncIter
 from redbot.core.utils.chat_formatting import (
     bold,
     box,
@@ -16,13 +18,14 @@ from redbot.core.utils.chat_formatting import (
 )
 from redbot.core.utils.predicates import MessagePredicate
 
+
 default_channel_message = (
-    "Sorry {member}, this channel is ratelimited! You'll be able to post again in {channel} in "
-    "{time}. "
+    "Sorry $member, this channel is ratelimited! You'll be able to post again in $channel in "
+    "time."
 )
 default_category_message = (
-    "Sorry {member}, this category is ratelimited! You'll be able to post again in {category} "
-    "in {time}. "
+    "Sorry $member, this category is ratelimited! You'll be able to post again in $channel in "
+    "$time."
 )
 
 
@@ -33,7 +36,7 @@ class CustomCooldown(commands.Cog):
     """
 
     __author__ = ["Maaz", "Predeactor"]
-    __version__ = "v1.3.3"
+    __version__ = "v1.4"
 
     async def red_delete_data_for_user(
         self,
@@ -50,17 +53,17 @@ class CustomCooldown(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = Config.get_conf(self, identifier=231120028796)
+        self.config.register_member(ignored=False)
+        self.config.register_role(ignored=False)
         self.config.register_guild(
             cooldown_channels={},
             cooldown_categories={},
             send_dm=False,
             ignore_bot=True,
-            ignore_roles=[],
-            ignore_users=[],
             channel_message=default_channel_message,
             category_message=default_category_message,
         )
-        self.date_format = "%d-%m-%Y:%H-%M-%S"
+        self.config.register_global(version=None)
         self.dmed = []
         super(CustomCooldown, self).__init__()
 
@@ -75,21 +78,23 @@ class CustomCooldown(commands.Cog):
 
     # Handling Functions
 
-    async def _handle_channel_cooldown(self, message, cooldown_channels, send_dm):
-        now = datetime.now()
+    async def _handle_channel_cooldown(self, message, cooldown_channel, send_dm):
+        now = round(datetime.timestamp(datetime.now()))
         channel = message.channel
         user = message.author
-        channel_data = cooldown_channels[str(message.channel.id)]
+        channel_data = cooldown_channel.get(str(channel.id), None)
+
+        if not channel_data:
+            return
+
+        # If user is not registered, add him and stop.
         if str(user.id) not in channel_data["users_on_cooldown"]:
-            channel_data["users_on_cooldown"][str(message.author.id)] = now.strftime(
-                self.date_format
-            )
-            cooldown_channels[str(message.channel.id)] = channel_data
-            await self.config.guild(message.guild).cooldown_channels.set(cooldown_channels)
+            channel_data["users_on_cooldown"][str(message.author.id)] = now
+            cooldown_channel[str(message.channel.id)] = channel_data
+            await self.config.guild(message.guild).cooldown_channels.set(cooldown_channel)
         else:
-            last_message = channel_data["users_on_cooldown"][str(message.author.id)]
-            last_message_date = datetime.strptime(last_message, self.date_format)
-            total_seconds = (now - last_message_date).total_seconds()
+            last_message_date = channel_data["users_on_cooldown"][str(message.author.id)]
+            total_seconds = now - last_message_date
             if total_seconds <= channel_data["cooldown_time"]:
                 try:
                     await message.delete()
@@ -97,71 +102,72 @@ class CustomCooldown(commands.Cog):
                 except (discord.NotFound, discord.Forbidden):
                     deleted = False
                     pass
-                if send_dm:
-                    if not user.bot:
-                        with suppressor(Exception):
-                            remaining_time = humanize_timedelta(
-                                seconds=(channel_data["cooldown_time"] - total_seconds)
-                            )
-                            send_me = (
-                                (await self.config.guild(message.guild).channel_message())
-                                .replace("{time}", remaining_time)
-                                .replace("{channel}", channel.mention)
-                                .replace("{member}", message.author.name)
-                            )
-                            await user.send(send_me)
+                if send_dm and not user.bot:
+                    with suppressor(Exception):
+                        remaining_time = humanize_timedelta(
+                            seconds=(channel_data["cooldown_time"] - total_seconds)
+                        )
+                        message_string = Template(
+                            await self.config.guild(message.guild).channel_message()
+                        )
+                        send_me = self._prepare_message(
+                            message_string,
+                            remaining_time,
+                            user.name,
+                            channel.name,
+                        )
+                        await user.send(send_me)
             else:
                 deleted = None
-                channel_data["users_on_cooldown"][str(message.author.id)] = now.strftime(
-                    self.date_format
-                )
-                cooldown_channels[str(message.channel.id)] = channel_data
-                await self.config.guild(message.guild).cooldown_channels.set(cooldown_channels)
+                channel_data["users_on_cooldown"][str(message.author.id)] = now
+                cooldown_channel[str(message.channel.id)] = channel_data
+                await self.config.guild(message.guild).cooldown_channels.set(cooldown_channel)
             # If message deletion wasn't possible:
             if deleted is False:
                 await self._dm_owner(message.guild.owner, channel)
 
-    async def _handle_category_cooldown(self, message, cooldown_categories, send_dm):
-        now = datetime.now()
+    async def _handle_category_cooldown(self, message, cooldown_category, send_dm):
+        now = round(datetime.timestamp(datetime.now()))
         channel = message.channel
         user = message.author
-        category_data = cooldown_categories.get(str(channel.category.id), None)
+        category_data = cooldown_category.get(str(channel.category.id), None)
+
         if not category_data:
             return
         category = channel.category
         if str(user.id) not in category_data["users_on_cooldown"]:
-            category_data["users_on_cooldown"][str(user.id)] = now.strftime(self.date_format)
-            cooldown_categories[str(category.id)] = category_data
-            await self.config.guild(message.guild).cooldown_categories.set(cooldown_categories)
+            category_data["users_on_cooldown"][str(user.id)] = now
+            cooldown_category[str(category.id)] = category_data
+            await self.config.guild(message.guild).cooldown_categories.set(cooldown_category)
         else:
-            last_message = category_data["users_on_cooldown"][str(user.id)]
-            last_message_date = datetime.strptime(last_message, self.date_format)
-            total_seconds = (now - last_message_date).total_seconds()
+            last_message_date = category_data["users_on_cooldown"][str(user.id)]
+            total_seconds = now - last_message_date
             if total_seconds <= category_data["cooldown_time"]:
                 try:
                     await message.delete()
                     deleted = True
-                except (discord.NotFound, discord.Forbidden):
+                except discord.Forbidden:
                     deleted = False
-                    pass
-                if send_dm:
-                    if not user.bot:
-                        with suppressor(Exception):
-                            remaining_time = humanize_timedelta(
-                                seconds=category_data["cooldown_time"] - total_seconds
-                            )
-                            send_me = (
-                                (await self.config.guild(message.guild).category_message())
-                                .replace("{time}", remaining_time)
-                                .replace("{category}", category.name)
-                                .replace("{member}", message.author.name)
-                            )
-                            await user.send(send_me)
+                if send_dm and not user.bot:
+                    with suppressor(Exception):
+                        remaining_time = humanize_timedelta(
+                            seconds=category_data["cooldown_time"] - total_seconds
+                        )
+                        message_string = Template(
+                            await self.config.guild(message.guild).category_message()
+                        )
+                        send_me = self._prepare_message(
+                            message_string,
+                            remaining_time,
+                            user.name,
+                            channel.category.name,
+                        )
+                        await user.send(send_me)
             else:
                 deleted = None
-                category_data["users_on_cooldown"][str(user.id)] = now.strftime(self.date_format)
-                cooldown_categories[str(channel.id)] = category_data
-                await self.config.guild(message.guild).cooldown_categories.set(cooldown_categories)
+                category_data["users_on_cooldown"][str(user.id)] = now
+                cooldown_category[str(channel.id)] = category_data
+                await self.config.guild(message.guild).cooldown_categories.set(cooldown_category)
             # If message deletion wasn't possible:
             if deleted is False:
                 await self._dm_owner(message.guild.owner, channel)
@@ -473,14 +479,15 @@ class CustomCooldown(commands.Cog):
     async def listignoredusers(self, ctx: commands.Context):
         """List ignored users."""
         text = ""
-        ignored_users = await self.config.guild(ctx.guild).ignore_users()
+        ignored_users = await self.config.all_members(ctx.guild)
         if ignored_users:
             for user_id in ignored_users:
-                user = await self._get_user(user_id)
-                if user:
-                    text += "- {name} (`{id}`).\n".format(name=user.name, id=user.id)
-                else:
-                    text += "- User not found: {id}".format(id=user_id)
+                if ignored_users[user_id]["ignored"]:
+                    user = await self._get_user(user_id)
+                    if user:
+                        text += "- {name} (`{id}`).\n".format(name=user.name, id=user.id)
+                    else:
+                        text += "- User not found: {id}".format(id=user_id)
         if text:
             for line in pagify(text):
                 await ctx.maybe_send_embed(line)
@@ -493,30 +500,39 @@ class CustomCooldown(commands.Cog):
         if not users:
             await ctx.send_help()
             return
+        must_be_added = []
         already_added = []
         is_bot = []
         final_message = ""
-        async with self.config.guild(ctx.guild).ignore_users() as iu:
-            for user in users:
-                if user.bot:
-                    is_bot.append(user.name)
-                    continue
-                if user.id not in iu:
-                    iu.append(user.id)
-                else:
-                    already_added.append(str(user))
+        all_members = await self.config.all_members(ctx.guild)
+
+        for user in users:
+            if user.bot:
+                is_bot.append(user.name)
+                continue
+            if user.id not in all_members or (
+                user.id in all_members and not all_members[user.id]["ignored"]
+            ):
+                must_be_added.append(user)
+            elif user.id in all_members and all_members[user.id]["ignored"]:
+                already_added.append(str(user))
+
+        for user in must_be_added:
+            await self.config.member(user).ignored.set(True)
+
         if len(is_bot) > 1:
-            final_message += "Those users are bots and cannot be added: {bots}\n".format(
+            final_message += "Those members are bots and cannot be added: {bots}\n".format(
                 bots=humanize_list(is_bot)
             )
         elif len(is_bot) == 1:
             final_message += "{bot} is a bot and cannot be added.\n".format(bot=is_bot[0])
         if len(already_added) > 1:
-            final_message += "Those users are already ignored: {list}".format(
+            final_message += "Those members are already ignored: {list}".format(
                 list=humanize_list(already_added)
             )
         elif len(already_added) == 1:
             final_message += "{user} is already ignored.".format(user=already_added[0])
+
         if final_message:
             for line in pagify(final_message):
                 await ctx.send(line)
@@ -528,22 +544,28 @@ class CustomCooldown(commands.Cog):
         if not users:
             await ctx.send_help()
             return
+        must_remove = []
         already_removed = []
-        async with self.config.guild(ctx.guild).ignore_users() as iu:
-            for user in users:
-                if user.id in iu:
-                    iu.remove(user.id)
-                else:
-                    already_removed.append(user.name)
-        message = ""
+        final_message = ""
+        all_members = await self.config.all_members(ctx.guild)
+
+        for user in users:
+            if user.id in all_members and all_members[user.id]["ignored"]:
+                must_remove.append(user)
+            elif user.id in all_members and not all_members[user.id]["ignored"]:
+                already_removed.append(user.name)
+
+        for user in must_remove:
+            await self.config.member(user).clear()
+
         if len(already_removed) > 1:
-            message = "Those users are already not ignored: {list}".format(
+            final_message = "Those users are already not ignored: {list}".format(
                 list=humanize_list(already_removed)
             )
         elif len(already_removed) == 1:
-            message = "{user} is already not ignored.".format(user=already_removed[0])
-        if message:
-            for line in pagify(message):
+            final_message = "{user} is already not ignored.".format(user=already_removed[0])
+        if final_message:
+            for line in pagify(final_message):
                 await ctx.send(line)
         await ctx.tick()
 
@@ -558,9 +580,14 @@ class CustomCooldown(commands.Cog):
     async def listignoredroles(self, ctx: commands.Context):
         """List ignored roles."""
         text = ""
-        ignored_roles = await self.config.guild(ctx.guild).ignore_roles()
-        if ignored_roles:
-            for role_id in ignored_roles:
+        all_roles = await self.config.all_roles()
+        guild_roles_id = [role.id for role in ctx.guild.roles]
+        in_relation_roles = list(
+            set(all_roles).intersection(guild_roles_id)
+        )  # This was, we only get guild's roles
+
+        for role_id in in_relation_roles:
+            if all_roles[role_id]["ignored"]:
                 role = ctx.guild.get_role(role_id)
                 if role:
                     text += "- {name} (`{id}`).\n".format(name=role.name, id=role.id)
@@ -570,7 +597,7 @@ class CustomCooldown(commands.Cog):
             for line in pagify(text):
                 await ctx.maybe_send_embed(line)
         else:
-            await ctx.send("There's no role to ignore.")
+            await ctx.send("There is no role to ignore.")
 
     @slowignoreroles.command(name="add")
     async def addignoreroles(self, ctx: commands.Context, *roles: discord.Role):
@@ -578,14 +605,23 @@ class CustomCooldown(commands.Cog):
         if not roles:
             await ctx.send_help()
             return
+        must_be_added = []
         already_added = []
         final_message = ""
-        async with self.config.guild(ctx.guild).ignore_roles() as ir:
-            for role in roles:
-                if role.id not in ir:
-                    ir.append(role.id)
+        all_roles = await self.config.all_roles()
+
+        for role in roles:
+            if role.id in all_roles:
+                if not all_roles[role.id]["ignored"]:
+                    must_be_added.append(role)
                 else:
                     already_added.append(role.name)
+            else:
+                must_be_added.append(role)
+
+        for role in must_be_added:
+            await self.config.role(role).ignored.set(True)
+
         if len(already_added) > 1:
             final_message += "Those roles are already ignored: {list}".format(
                 list=humanize_list(already_added)
@@ -604,13 +640,22 @@ class CustomCooldown(commands.Cog):
             await ctx.send_help()
             return
         already_removed = []
-        async with self.config.guild(ctx.guild).ignore_roles() as ir:
-            for role in roles:
-                if role.id in ir:
-                    ir.remove(role.id)
+        must_be_removed = []
+        message = ""
+        all_roles = await self.config.all_roles()
+
+        for role in roles:
+            if role.id in all_roles:
+                if all_roles[role.id]["ignored"]:
+                    must_be_removed.append(role)
                 else:
                     already_removed.append(role.name)
-        message = ""
+            else:
+                already_removed.append(role.name)
+
+        for role in must_be_removed:
+            await self.config.role(role).ignored.clear()
+
         if len(already_removed) > 1:
             message = "Those roles are already not ignored: {list}".format(
                 list=humanize_list(already_removed)
@@ -629,11 +674,11 @@ class CustomCooldown(commands.Cog):
         """Change the message to send to user when triggering channels cooldown.
 
         Parameters:
-        - `{time}` will be replaced with remaining cooldown time.
-        - `{member}` will get replaced with member's name.
-        - `{channel}` will get replaced with channel's name.
+        - `$time` will be replaced with remaining cooldown time.
+        - `$member` will get replaced with member's name.
+        - `$channel` will get replaced with channel's name.
 
-        To use default message, use `None` for message.
+        To use default message, use `None` for parameter message.
         """
         if not message:
             await ctx.send_help()
@@ -654,11 +699,11 @@ class CustomCooldown(commands.Cog):
         """Change the message to send to user when triggering categories cooldown.
 
         Parameters:
-        - `{time}` will be replaced with remaining cooldown time.
-        - `{member}` will get replaced with member's name.
-        - `{category}` will get replaced with category's name.
+        - `$time` will be replaced with remaining cooldown time.
+        - `$member` will get replaced with member's name.
+        - `$channel` will get replaced with category's name.
 
-        To use default message, use `None` for message.
+        To use default message, use `None` for parameter message.
         """
         if not message:
             await ctx.send_help()
@@ -726,27 +771,32 @@ class CustomCooldown(commands.Cog):
             )
         )
 
-    # Functions
+    # Listener
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         if not message.guild:
             return
-        if await self.config.guild(message.guild).ignore_bot():
-            if message.author.bot:
-                return
-        if message.author.id in await self.config.guild(message.guild).ignore_users():
-            return
-        if any(
-            role in set([role.id for role in message.author.roles])
-            for role in await self.config.guild(message.guild).ignore_roles()
-        ):
-            return
-        cooldown_channels = await self.config.guild(message.guild).cooldown_channels()
-        cooldown_categories = await self.config.guild(message.guild).cooldown_categories()
 
-        categories_ids = []
-        categories_channels = []
+        data = await self.config.guild(message.guild).all()
+
+        if data["ignore_bot"] and message.author.bot:
+            return
+        ignored_roles = await self.config.all_roles()
+        for roleid in set([role.id for role in message.author.roles]):
+            if roleid in ignored_roles:
+                if ignored_roles[roleid].get("ignored", False):
+                    return
+        members = await self.config.all_members(message.guild)
+        if message.author.id in members:
+            if members[message.author.id].get("ignored", False):
+                return
+
+        cooldown_categories = data["cooldown_categories"]
+        cooldown_channels = data["cooldown_channels"]
+
+        categories_ids = []  # Where we store categories ID for a moment.
+        categories_channels = []  # Where we store channels we're gonna check.
         for category_id in cooldown_categories:
             categories_ids.append(str(category_id))
         for category_id in categories_ids:
@@ -755,15 +805,18 @@ class CustomCooldown(commands.Cog):
         channel = message.channel
         if str(channel.id) not in list(cooldown_channels.keys()) + categories_channels:
             return
-        send_dm = await self.config.guild(message.guild).send_dm()
+
+        send_dm = data["send_dm"]
         if str(channel.id) in cooldown_channels:
-            await self._handle_channel_cooldown(message, cooldown_channels, send_dm=send_dm)
-        if channel.category and str(channel.id) in categories_channels:
-            await self._handle_category_cooldown(message, cooldown_categories, send_dm=send_dm)
+            await self._handle_channel_cooldown(message, cooldown_channels, send_dm)
+        if channel.category and (str(channel.id) in categories_channels):
+            await self._handle_category_cooldown(message, cooldown_categories, send_dm)
+
+    # Functions
 
     async def _update_channel_data(
         self, ctx: commands.Context, channel: discord.TextChannel, time
-    ):
+    ) -> None:
         if isinstance(time, float):
             time = int(time)
         async with self.config.guild(ctx.guild).cooldown_channels() as cooldown_channels:
@@ -774,7 +827,7 @@ class CustomCooldown(commands.Cog):
 
     async def _update_category_data(
         self, ctx: commands.Context, category: discord.CategoryChannel, time
-    ):
+    ) -> None:
         if isinstance(time, float):
             time = int(time)
         async with self.config.guild(ctx.guild).cooldown_categories() as cooldown_categories:
@@ -784,7 +837,7 @@ class CustomCooldown(commands.Cog):
                 "channels": [channel.id for channel in category.channels],
             }
 
-    async def _delete_channel(self, ctx: commands.Context, channel: discord.TextChannel):
+    async def _delete_channel(self, ctx: commands.Context, channel: discord.TextChannel) -> None:
         async with self.config.guild(ctx.guild).cooldown_channels() as cooldown_channels:
             if str(channel.id) in cooldown_channels:
                 del cooldown_channels[str(channel.id)]
@@ -794,9 +847,10 @@ class CustomCooldown(commands.Cog):
                         channel=channel.mention
                     )
                 )
-                return
 
-    async def _delete_category(self, ctx: commands.Context, category: discord.CategoryChannel):
+    async def _delete_category(
+        self, ctx: commands.Context, category: discord.CategoryChannel
+    ) -> None:
         async with self.config.guild(ctx.guild).cooldown_categories() as cooldown_categories:
             if str(category.id) in cooldown_categories:
                 del cooldown_categories[str(category.id)]
@@ -806,7 +860,6 @@ class CustomCooldown(commands.Cog):
                         category=category.name
                     )
                 )
-                return
 
     @staticmethod
     def _return_time(time):
@@ -824,7 +877,7 @@ class CustomCooldown(commands.Cog):
                 return None
         return user
 
-    async def _dm_owner(self, owner: discord.Member, channel: discord.TextChannel):
+    async def _dm_owner(self, owner: discord.Member, channel: discord.TextChannel) -> None:
         if owner.id in self.dmed:
             return
         with suppressor(Exception):
@@ -836,3 +889,46 @@ class CustomCooldown(commands.Cog):
                 "until the next bot reboot or cog reload.".format(channel=channel.mention)
             )
         self.dmed.append(owner.id)
+
+    @staticmethod
+    def _prepare_message(string: Template, time: str, member: str, channel: str) -> str:
+        template = {"time": time, "member": member, "channel": channel}
+        return string.safe_substitute(template)
+
+    async def _maybe_update_config(self) -> str:
+        """Update Config for the new version of CustomCooldown."""
+        if not await self.config.version():
+            guild_dict = await self.config.all_guilds()
+            async for guild_id, info in AsyncIter(guild_dict.items()):
+                old_temporary_ignore_roles = info.get("ignore_roles", None)
+                if old_temporary_ignore_roles:
+                    for role_id in old_temporary_ignore_roles:
+                        await self.config.role_from_id(role_id).ignored.set(True)
+                    await self.config.guild_from_id(guild_id).ignore_roles.clear()
+                old_temporary_ignore_users = info.get("ignore_users", None)
+                if old_temporary_ignore_users:
+                    for user_id in old_temporary_ignore_users:
+                        await self.config.member_from_ids(guild_id, user_id).ignored.set(True)
+                    await self.config.guild_from_id(guild_id).ignore_users.clear()
+                old_category_message = info.get("category_message", None)
+                if old_category_message:
+                    new_category_message = (
+                        old_category_message.replace("{time}", "$time")
+                        .replace("{member}", "$member")
+                        .replace("{channel}", "$channel")
+                    )
+                    await self.config.guild_from_id(guild_id).category_message.set(
+                        new_category_message
+                    )
+                old_channel_message = info.get("category_message", None)
+                if old_channel_message:
+                    new_channel_message = (
+                        old_channel_message.replace("{time}", "$time")
+                        .replace("{member}", "$member")
+                        .replace("{channel}", "$channel")
+                    )
+                    await self.config.guild_from_id(guild_id).channel_message.set(
+                        new_channel_message
+                    )
+            await self.config.version.set("1.0.0")
+        return "uwu"

@@ -16,7 +16,10 @@ class CommandsCounter(commands.Cog):
         requester: Literal["discord_deleted_user", "owner", "user", "user_strict"],
         user_id: int,
     ):
-        pass  # Nothing to delete.
+        """
+        Nothing to delete...
+        """
+        pass
 
     def __init__(self, bot):
         self.bot = bot
