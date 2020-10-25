@@ -17,16 +17,16 @@ This is a repo made for [Red](https://github.com/Cog-Creators/Red-DiscordBot).
 | Captcher        | Captcha cog.                                             | Beta v0.5.1 |
 | CleverBot       | Talk or ask a question to CleverBot for free.            | v1.0.4      |
 | CommandsCounter | Know how many time a command has been used super easily. | v1          |
-| CustomCooldown  | Custom slowmode/cooldown moderated by the bot itself.    | v1.3.3      |
-| LeaderBoard     | Global reputation system using points.                   | v1.0.2      |
-| Lyrics          | Get lyrics of a music through KSoft.Si.                  | v1          |
+| CustomCooldown  | Custom slowmode/cooldown moderated by the bot itself.    | v1.4        |
+| LeaderBoard     | Global reputation system using points.                   | v1.0.3      |
+| Lyrics          | Get lyrics of a music through KSoft.Si.                  | v1.0.2      |
 
 ## Hidden cogs
 
 | Cog Name | Description                                | Version   | Reason             |
 | -------- | ------------------------------------------ | --------- | ------------------ |
-| Learning | Receive some tutorials about Python.       | EoL       | End of life        |
-| SXCU     | Shorten your link, and more in the future. | Alpha 0.1 | Being worked on... |
+| Learning | Receive some tutorials about Python.       | EoL       | End of life.       |
+| SXCU     | Shorten your link, and more in the future. | Beta v0.4 | Being worked on... |
 
 ## Support
 
