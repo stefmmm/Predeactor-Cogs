@@ -1,7 +1,7 @@
 <h1 align="center">⭐ Predeactor Cogs ⭐</h1>
 
 <p align="center">
-  <img src="https://repository-images.githubusercontent.com/245725383/2fbcee00-906c-11ea-8da9-ecbb66c5b7d4" alt="Banner">
+  <img src="https://repository-images.githubusercontent.com/245725383/9a2ea880-121e-11eb-92db-c3bdf6b825ec" alt="Banner">
   <img src="https://img.shields.io/badge/Made%20for-Red%20v3-red?logo=discord" alt="Made for Red">
   <a href="https://www.codefactor.io/repository/github/predeactor/predeactor-cogs">
     <img src="https://www.codefactor.io/repository/github/predeactor/predeactor-cogs/badge" alt="CodeFactor" />
