@@ -36,7 +36,7 @@ class CustomCooldown(commands.Cog):
     """
 
     __author__ = ["Maaz", "Predeactor"]
-    __version__ = "v1.4"
+    __version__ = "v1.4.01"
 
     async def red_delete_data_for_user(
         self,
@@ -46,9 +46,7 @@ class CustomCooldown(commands.Cog):
     ):
         if requester in ("owner", "user_strict", "discord_deleted_user"):
             for guild in self.bot.guilds:
-                async with self.config.guild(guild).ignore_users() as iu:
-                    if user_id in iu:
-                        iu.remove(user_id)
+                await self.config.member_from_ids(guild.id, user_id).clear()
 
     def __init__(self, bot):
         self.bot = bot
