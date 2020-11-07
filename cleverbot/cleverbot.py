@@ -57,10 +57,7 @@ class CleverBot(Core):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        """Checks for CleverBot.
-        If user in self.conversation, a message will be sent with CleverBot's answer.
-        Else code is exited.
-        """
+        """The CleverBot listener that will send a message in case a user is in a conversation."""
         ctx = await self.bot.get_context(message)
 
         # If user is not using conversation

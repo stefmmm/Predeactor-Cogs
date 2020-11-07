@@ -1,7 +1,11 @@
 import random
 from typing import Literal, Optional
 
-import async_cleverbot as ac
+try:
+    import async_cleverbot as ac
+    available = True
+except ImportError:
+    available = False
 import discord
 from redbot.core import checks, commands
 from redbot.core.bot import Red
@@ -100,10 +104,11 @@ def apicheck():
     """
     Check for hidding commands if the API key is not registered.
     Taken from https://github.com/PredaaA/predacogs/blob/master/nsfw/core.py#L200
-    Thanks Preda.
     """
 
     async def predicate(ctx: commands.Context):
+        if not available:
+            return False
         travitia_keys = await ctx.bot.get_shared_api_tokens("travitia")
         key = travitia_keys.get("api_key") is None
         if ctx.invoked_with == "help" and key:
@@ -112,5 +117,4 @@ def apicheck():
             await ctx.send("The API key is not registered, the command is unavailable.")
             return False
         return True
-
     return commands.check(predicate)
