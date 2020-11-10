@@ -1,11 +1,8 @@
 import random
 from typing import Literal, Optional
 
-try:
-    import async_cleverbot as ac
-    available = True
-except ImportError:
-    available = False
+from .asynccleverbot import cleverbot as ac
+
 import discord
 from redbot.core import checks, commands
 from redbot.core.bot import Red
@@ -15,7 +12,7 @@ from redbot.core.utils.chat_formatting import humanize_list
 class Core(commands.Cog):
 
     __author__ = ["Predeactor"]
-    __version__ = "v1.0.4.2"
+    __version__ = "v1.0.5"
 
     async def red_delete_data_for_user(
         self,
@@ -56,7 +53,7 @@ class Core(commands.Cog):
         return cleverbot_session
 
     @staticmethod
-    async def _ask_question(session, question: str, user_id: Optional[int] = None):
+    async def ask_question(session, question: str, user_id: Optional[int] = None):
         try:
             answer = await session.ask(question, user_id if user_id is not None else "00")
             answered = True
@@ -74,6 +71,8 @@ class Core(commands.Cog):
             "Sorry but after 5 minutes, I close your conversation.",
             "Conversation stopped.",
             "Since I'm lonely, I close our conversation.",
+            "It's so lonely on the outside... Closing our conversation.",
+            "I feel... alone. Closing the conversation."
         ]
         return random.choice(messages)
 
@@ -95,7 +94,7 @@ class Core(commands.Cog):
             await ctx.message.delete()
         except (discord.Forbidden, discord.HTTPException):
             await ctx.send(
-                "Please delete your message, token is sensitive and should be" " kept secret."
+                "Please delete your message, token is sensitive and should be kept secret."
             )
         await ctx.send("API key for `travitia` registered.")
 
@@ -107,8 +106,6 @@ def apicheck():
     """
 
     async def predicate(ctx: commands.Context):
-        if not available:
-            return False
         travitia_keys = await ctx.bot.get_shared_api_tokens("travitia")
         key = travitia_keys.get("api_key") is None
         if ctx.invoked_with == "help" and key:
@@ -117,4 +114,5 @@ def apicheck():
             await ctx.send("The API key is not registered, the command is unavailable.")
             return False
         return True
+
     return commands.check(predicate)

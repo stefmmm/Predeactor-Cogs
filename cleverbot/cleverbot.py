@@ -22,7 +22,7 @@ class CleverBot(Core):
         asking a single question."""
         async with ctx.typing():
             session = await self._make_cleverbot_session()
-            answer, answered = await self._ask_question(session, question, ctx.author.id)
+            answer, answered = await self.ask_question(session, question, ctx.author.id)
             if answered:
                 message = "{user}, {answer}".format(user=ctx.author.name, answer=answer)
             else:
@@ -91,7 +91,7 @@ class CleverBot(Core):
         # if all checks pass
         async with ctx.typing():
             self.conversation[str(ctx.author.id)]["typing"] = True
-            answer, answered = await self._ask_question(session, message.content, ctx.author.id)
+            answer, answered = await self.ask_question(session, message.content, ctx.author.id)
             if answered:
                 message = "{user}, {answer}".format(user=ctx.author.mention, answer=answer)
                 self.conversation[str(ctx.author.id)]["timer"] = datetime.now()
