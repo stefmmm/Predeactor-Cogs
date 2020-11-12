@@ -34,7 +34,11 @@ class CodeSource(commands.Cog):
         if command is None:
             await ctx.send("Command not found.")
             return
-        source_code = inspect.getsource(command.callback)
+        try:
+            source_code = inspect.getsource(command.callback)
+        except OSError:
+            await ctx.send("The command wasn't found, is it an InstantCmd command?")
+            return
         temp_pages = []
         pages = []
         for page in pagify(source_code, escape_mass_mentions=True, page_length=1980):
