@@ -19,7 +19,7 @@ This is a repo made for [Red](https://github.com/Cog-Creators/Red-DiscordBot).
 | CommandsCounter | Know how many time a command has been used super easily.                                 | v1          |
 | CustomCooldown  | Custom slowmode/cooldown moderated by the bot itself.                                    | v1.3.3      |
 | LeaderBoard     | Global reputation system using points.                                                   | v1.0.2      |
-| Lyrics          | Get lyrics of a music through KSoft.Si.                                                  | v1          |
+| Lyrics          | Get lyrics of a music through KSoft.Si.                                                  | v1.0.3      |
 | SXCU            | Shorten your link, upload your images through a custom subdomain and more in the future. | Beta v0.4   |
 
 ## Hidden cogs
