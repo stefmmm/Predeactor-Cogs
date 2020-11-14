@@ -72,7 +72,7 @@ class Core(commands.Cog):
             "Conversation stopped.",
             "Since I'm lonely, I close our conversation.",
             "It's so lonely on the outside... Closing our conversation.",
-            "I feel... alone. Closing the conversation."
+            "I feel... alone. Closing the conversation.",
         ]
         return random.choice(messages)
 
