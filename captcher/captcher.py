@@ -346,6 +346,9 @@ class Captcher(Core):
             if captched:
                 await self._add_roles(user, roles)
                 await self._report_log(user, "completed", f"Completed captcha.")
+                role = ctx.guild.get_role(data["temprole"])
+                if role in user.roles:
+                    await user.remove_roles(role)
             else:
                 await self._report_log(user, "kick", "Failed captcha.")
                 result = await self._mute_or_unmute_user(channel, user, False)
